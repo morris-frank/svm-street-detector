@@ -3,11 +3,12 @@ function showSequenceBB(FolderNumbers)
 assert(min(FolderNumbers) >= 0) 
 assert(max(FolderNumbers) <= 10)
 
-FolderNameBase = 'seq';
+HeaderConfig
+global FOLDERNAMEBASE
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderName = strcat(FolderNameBase, sprintf('%04d', FolderNumber));
+    FolderName = strcat(FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
 
     frames = dir(strcat(FolderName, '/*jpg'));
     

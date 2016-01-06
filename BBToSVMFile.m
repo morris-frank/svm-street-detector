@@ -1,11 +1,16 @@
-function BBToSVMFile(bbFileName, FolderName, MwBB, wHOGCell, numOrient)
+function BBToSVMFile(bbFileName, FolderName, sB, MwBB, wHOGCell, numOrient) 
+% Converts the BoundingBoxes on a *.bb file to SVM train data
+% BBToSVMFile(bbFileName, FolderName)
 
-if nargin < 5
+if nargin < 6
     numOrient = 9;
-    if nargin < 4
+    if nargin < 5
         wHOGCell = 9;
-        if nargin < 3
+        if nargin < 4
             MwBB = 9;
+            if nargin < 3
+                sB = 1;
+            end
         end
     end
 end
@@ -13,7 +18,9 @@ end
 assert(exist(FolderName, 'dir') == 7)
 assert(exist(bbFileName, 'file') == 2)
 
-addpath('./libsvm-3.21/matlab/')
+HeaderConfig
+global LIBSVM_PATH
+addpath(LIBSVM_PATH)
 
 FolderNameAdd = '_train/';
 mkdir(strcat(FolderName, FolderNameAdd));
@@ -31,13 +38,15 @@ clear BBData BBFile;
 sI = 0;
 MsI = 1000;
 
+assert(sB < nBB)
+
 labelVector = double(zeros(MsI, 1));
 featureMatrix = double(zeros(MsI, MwBB^2 * (3*numOrient+4)));
 
 oldFrameID = -1;
 
 %Iterate over the Bounding Boxes
-for b = 1:nBB
+for b = sB:nBB
     sI = sI + 1;
 
     %Load HOG features for this Bounding Box
@@ -68,7 +77,7 @@ for b = 1:nBB
     end
     featureMatrix(sI, :, :) = reshape(scaledFeatures, [], 1).';
     labelVector(sI) = BBMat(b, 2);
-    
+
     %Time to save some stuff eh
     if sI == MsI
         libsvmwrite(strcat(FolderName, FolderNameAdd, num2str(b-MsI), '-', num2str(b), '.train'), labelVector, sparse(featureMatrix));

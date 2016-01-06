@@ -8,16 +8,17 @@ assert(min(FolderNumbers) >= 0)
 assert(max(FolderNumbers) <= 10)
 assert(wHOGCell > 0)
 
-FolderNameBase = 'seq';
+HeaderConfig
+global VLFEAT_PATH FOLDERNAMEBASE
 FolderNameAdd = '_hog/';
 
-cd vlfeat/toolbox/
+cd VLFEAT_PATH
 vl_setup
 cd ../../
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderName = strcat(FolderNameBase, sprintf('%04d', FolderNumber));
+    FolderName = strcat(FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
 
     mkdir(strcat(FolderName, FolderNameAdd));
     frames = dir(strcat(FolderName, '/*jpg'));

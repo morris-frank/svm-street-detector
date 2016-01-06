@@ -3,9 +3,10 @@ function calcSVM(FolderNumbers)
 assert(min(FolderNumbers) >= 0)
 assert(max(FolderNumbers) <= 10)
 
-addpath('./libsvm-3.21/matlab/')
+HeaderConfig
+global LIBSVM_PATH FOLDERNAMEBASE
+addpath(LIBSVM_PATH)
 
-FolderNameBase = 'seq';
 %Size of a HOG Cell:
 wHOGCell = 9;
 %Maximal with of a Bounding Box
@@ -16,7 +17,7 @@ TrainParams = '';
 
 %Iterate over video folders
 for FolderNumber = FolderNumbers
-    FolderName = strcat(FolderNameBase, sprintf('%04d', FolderNumber));
+    FolderName = strcat(FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
 
     frames = dir(strcat(FolderName, '/*jpg'));
 

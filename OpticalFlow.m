@@ -13,12 +13,14 @@ assert(scalingFactor <= 1)
 assert(scalingFactor > 0)
 assert(windowSize > 1)
 
-FolderNameBase = 'seq';
+HeaderConfig
+global FOLDERNAMEBASE
+
 FolderNameAdd = '_opticalflow';
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderName = strcat(FolderNameBase, sprintf('%04d', FolderNumber));
+    FolderName = strcat(FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
 
     mkdir(strcat(FolderName, FolderNameAdd));
     frames = dir(strcat(FolderName, '/*png'));

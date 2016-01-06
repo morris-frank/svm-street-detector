@@ -8,13 +8,13 @@ assert(min(FolderNumbers) >= 0)
 assert(max(FolderNumbers) <= 10)
 assert(wBB > 0)
 
-addpath('./libsvm-3.21/matlab/')
-
-FolderNameBase = 'seq';
+HeaderConfig
+global LIBSVM_PATH FOLDERNAMEBASE
+addpath(LIBSVM_PATH)
 
 %Iterate over video folders
 for FolderNumber = FolderNumbers
-    FolderName = strcat(FolderNameBase, sprintf('%04d', FolderNumber));
+    FolderName = strcat(FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
 
     frames = dir(strcat(FolderName, '/*jpg'));
 
