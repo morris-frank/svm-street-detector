@@ -9,7 +9,6 @@ assert(max(FolderNumbers) <= 10)
 assert(wBB > 0)
 
 addpath('./libsvm-3.21/matlab/')
-addpath('./liblinear-incdec-2.01/matlab/')
 
 FolderNameBase = 'seq';
 

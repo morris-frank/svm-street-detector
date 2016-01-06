@@ -4,7 +4,6 @@ assert(min(FolderNumbers) >= 0)
 assert(max(FolderNumbers) <= 10)
 
 addpath('./libsvm-3.21/matlab/')
-addpath('./liblinear-incdec-2.01/matlab/')
 
 FolderNameBase = 'seq';
 %Size of a HOG Cell:
@@ -29,7 +28,7 @@ for FolderNumber = FolderNumbers
     BBMat  = unique(sortrows(BBMat), 'rows');
     fclose(BBFile);
     clear BBData BBFile;
-   
+
     i = 1;
     Size_All_BBoxes = size(BBMat, 1);
     MODEL;
@@ -45,13 +44,13 @@ for FolderNumber = FolderNumbers
         load(strcat(FolderName, '_hog/I', sprintf('%05d', f), '_data.mat'));
         HOG = data; clear data
         [yHOG, xHOG, ~] = size(HOG);
-        
+
         y = zeros(Size_BBoxes);
         x = {};
-        
+
         %Iterate over Bounding Boxes of that frame
         for b = 1:Size_BBoxes;
-            
+
             %Most left HOG cell overlapping BBox:
             l = idivide(BBoxes(b, 3), wHOGCell, 'floor') + 1;
             %Most right HOG cell overlapping BBox:
@@ -62,11 +61,11 @@ for FolderNumber = FolderNumbers
             %Lowest HOG cell overlapping BBox:
             u = idivide(BBoxes(b, 6), wHOGCell, 'floor') + 2;
             u = min(u, yHOG);
-            
+
             y(b) = BBoxes(b, 2);
             x{b} = zeros(MwBB, MwBB, wHOGCell * 3 + 4);
             x{b}(1:(u-o+1), 1:(r-l+1), :) = HOG(o:u, l:r, :);
-            
+
             i = i + 1;
         end
         try
@@ -78,13 +77,13 @@ for FolderNumber = FolderNumbers
             else
                 %MODEL = train(y, x, '-s 2 -i MODEL');
                 MODEL = svmtrain(y, x);
-            end    
+            end
         catch
             disp(strcat('Not using: ', i))
             continue
         end
         disp(strcat(num2str(i/Size_All_BBoxes*100), '%'));
     end
-    
+
     pause
 end
