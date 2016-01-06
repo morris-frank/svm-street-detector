@@ -8,7 +8,6 @@ if nargin < 3
 end
 
 assert(min(FolderNumbers) >= 0)
-assert(max(FolderNumbers) <= 10)
 assert(scalingFactor <= 1)
 assert(scalingFactor > 0)
 assert(windowSize > 1)

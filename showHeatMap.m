@@ -5,7 +5,6 @@ if nargin < 3
 end
 
 assert(min(FolderNumbers) >= 0)
-assert(max(FolderNumbers) <= 10)
 assert(wBB > 0)
 
 HeaderConfig
@@ -20,7 +19,7 @@ for FolderNumber = FolderNumbers
 
     %Iterate over frames in video
     for f = 1:length(frames)
-        FrameHeatMap(FolderName, frames(f).('name'), Model, wBB)
+        FrameHeatMap(FolderName, f, Model, wBB)
     end
 end
 

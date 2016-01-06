@@ -1,7 +1,6 @@
 function calcSVM(FolderNumbers)
 
 assert(min(FolderNumbers) >= 0)
-assert(max(FolderNumbers) <= 10)
 
 HeaderConfig
 global LIBSVM_PATH FOLDERNAMEBASE

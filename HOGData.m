@@ -5,14 +5,12 @@ if nargin < 2
 end
 
 assert(min(FolderNumbers) >= 0)
-assert(max(FolderNumbers) <= 10)
 assert(wHOGCell > 0)
 
 HeaderConfig
 global VLFEAT_PATH FOLDERNAMEBASE
 FolderNameAdd = '_hog/';
-
-cd VLFEAT_PATH
+cd(VLFEAT_PATH)
 vl_setup
 cd ../../
 

@@ -1,7 +1,6 @@
 function EdgeDetection(FolderNumbers)
 
 assert(min(FolderNumbers) >= 0)
-assert(max(FolderNumbers) <= 10)
 
 HeaderConfig
 global FOLDERNAMEBASE
