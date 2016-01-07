@@ -30,7 +30,7 @@ for posX = 1:(xHOG - wBB)
    for posY = 1:(yHOG - wBB)
        x = HOG(posY:(posY + wBB-1), posX:(posX + wBB-1), :);
        PredictInstantMat(posX*posY, :) = reshape(x, [], 1).';
-       PredictLabels(posX*posY) = double(rand(1));
+       PredictLabels(posX*posY) = rand(1) > 0.5;
     end
 end
 
