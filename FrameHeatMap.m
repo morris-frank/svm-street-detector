@@ -10,6 +10,10 @@ if nargin < 6
     end
 end
 
+HeaderConfig
+global LIBSVM_PATH FOLDERNAMEBASE
+addpath(LIBSVM_PATH)
+
 assert(exist(FolderName, 'dir') == 7)
 assert(exist(strcat(FolderName, '_hog/'), 'dir') == 7)
 
