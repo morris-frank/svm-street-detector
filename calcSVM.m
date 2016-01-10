@@ -3,7 +3,7 @@ function calcSVM(FolderNumbers)
 assert(min(FolderNumbers) >= 0)
 
 HeaderConfig
-global LIBSVM_PATH FOLDERNAMEBASE
+global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER
 addpath(LIBSVM_PATH)
 
 %Size of a HOG Cell:
@@ -16,12 +16,12 @@ TrainParams = '';
 
 %Iterate over video folders
 for FolderNumber = FolderNumbers
-    FolderName = strcat(FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
+    FolderPath = strcat(DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
 
-    frames = dir(strcat(FolderName, '/*jpg'));
+    frames = dir(strcat(FolderPath, '/*jpg'));
 
     %Load and parse all bounding boxes for that video
-    BBFile = fopen(strcat(FolderName, '.bb'));
+    BBFile = fopen(strcat(FolderPath, '.bb'));
     BBData = textscan(BBFile, 'seq%u16\\I%5u16.jpg    %u16 %u16 %u16 %u16    %1u16');
     %[1:FrameID, 2:CatID, 3:left, 4:top, 5:right, 6:bottom]
     BBMat  = cell2mat({BBData{2}, BBData{7}, BBData{3}, BBData{4}, BBData{5}, BBData{6}});
@@ -41,7 +41,7 @@ for FolderNumber = FolderNumbers
         Size_BBoxes = size(BBoxes, 1);
 
         %Load HOG features for this frame
-        load(strcat(FolderName, '_hog/I', sprintf('%05d', f), '_data.mat'));
+        load(strcat(FolderPath, '_hog/I', sprintf('%05d', f), '_data.mat'));
         HOG = data; clear data
         [yHOG, xHOG, ~] = size(HOG);
 

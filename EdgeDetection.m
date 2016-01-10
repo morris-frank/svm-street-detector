@@ -3,30 +3,30 @@ function EdgeDetection(FolderNumbers)
 assert(min(FolderNumbers) >= 0)
 
 HeaderConfig
-global FOLDERNAMEBASE
+global FOLDERNAMEBASE DATAFOLDER
 
 FolderNameAdd = '_edge/';
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderName = strcat(FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
+    FolderPath = strcat(DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
 
-    mkdir(strcat(FolderName, FolderNameAdd));
-    frames = dir(strcat(FolderName, '/*jpg'));
+    mkdir(strcat(FolderPath, FolderNameAdd));
+    frames = dir(strcat(FolderPath, '/*jpg'));
 
     %Iterate through frames with two iterators
     parfor f = 1:length(frames)
         frame = frames(f)
         frameName = strtok(frame.('name'), '.');
-        if exist(strcat(FolderName, FolderNameAdd, frameName, '_canny.jpg'), 'file') && exist(strcat(FolderName, FolderNameAdd, frameName, '_prewitt.jpg'), 'file')
+        if exist(strcat(FolderPath, FolderNameAdd, frameName, '_canny.jpg'), 'file') && exist(strcat(FolderPath, FolderNameAdd, frameName, '_prewitt.jpg'), 'file')
            continue
         end
-        disp(strcat(FolderName, ': ', frameName));
+        disp(strcat(FolderPath, ': ', frameName));
 
         %Read image, make them gray doubles
         %and put into gpuarray
         Im = rgb2gray( imread( ...
-                                    strcat(FolderName, '/', frame.('name')) ...
+                                    strcat(FolderPath, '/', frame.('name')) ...
                      ));
 
         %Calculate canny and prewitt pictures:
@@ -39,7 +39,7 @@ for FolderNumber = FolderNumbers
         canny = edge(Im, 'canny', [0.03, 0.085])
 
         %Write results to images
-        imwrite(canny, strcat(FolderName, FolderNameAdd, frameName, '_canny.png'), 'png');
-        imwrite(prewitt, strcat(FolderName, FolderNameAdd, frameName, '_prewitt.png'), 'png');
+        imwrite(canny, strcat(FolderPath, FolderNameAdd, frameName, '_canny.png'), 'png');
+        imwrite(prewitt, strcat(FolderPath, FolderNameAdd, frameName, '_prewitt.png'), 'png');
     end;
 end;

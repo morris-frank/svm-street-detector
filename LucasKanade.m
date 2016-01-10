@@ -14,7 +14,7 @@ for i = halfWindow+1:size(fx,1)-halfWindow
       curFx = fx(i-halfWindow:i+halfWindow, j-halfWindow:j+halfWindow);
       curFy = fy(i-halfWindow:i+halfWindow, j-halfWindow:j+halfWindow);
       curFt = ft(i-halfWindow:i+halfWindow, j-halfWindow:j+halfWindow);
-      
+
       curFx = curFx';
       curFy = curFy';
       curFt = curFt';
@@ -23,11 +23,11 @@ for i = halfWindow+1:size(fx,1)-halfWindow
       curFx = curFx(:);
       curFy = curFy(:);
       curFt = -curFt(:);
-      
+
       A = [curFx curFy];
-      
+
       U = pinv(A'*A)*A'*curFt;
-      
+
       u(i,j)=U(1);
       v(i,j)=U(2);
    end;
@@ -38,7 +38,7 @@ v(isnan(v))=0;
 
 %u=u(2:size(u,1), 2:size(u,2));
 %v=v(2:size(v,1), 2:size(v,2));
-      
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [fx, fy, ft] = ComputeDerivatives(im1, im2);
 %ComputeDerivatives	Compute horizontal, vertical and time derivative

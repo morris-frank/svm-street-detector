@@ -8,7 +8,7 @@ assert(min(FolderNumbers) >= 0)
 assert(wHOGCell > 0)
 
 HeaderConfig
-global VLFEAT_PATH FOLDERNAMEBASE
+global VLFEAT_PATH FOLDERNAMEBASE DATAFOLDER
 FolderNameAdd = '_hog/';
 cd(VLFEAT_PATH)
 vl_setup
@@ -16,31 +16,31 @@ cd ../../
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderName = strcat(FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
+    FolderPath = strcat(DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
 
-    mkdir(strcat(FolderName, FolderNameAdd));
-    frames = dir(strcat(FolderName, '/*jpg'));
+    mkdir(strcat(FolderPath, FolderNameAdd));
+    frames = dir(strcat(FolderPath, '/*jpg'));
 
     %Iterate through frames with two iterators
     parfor f = 1:length(frames)
         frame = frames(f)
         frameName = strtok(frame.('name'), '.');
-        if exist(strcat(FolderName, FolderNameAdd, frameName, '_render.png'), 'file') && exist(strcat(FolderName, FolderNameAdd, frameName, '_data.mat'), 'file')
+        if exist(strcat(FolderPath, FolderNameAdd, frameName, '_render.png'), 'file') && exist(strcat(FolderPath, FolderNameAdd, frameName, '_data.mat'), 'file')
            continue
         end
-        disp(strcat(FolderName, ': ', frameName));
+        disp(strcat(FolderPath, ': ', frameName));
 
         %Read image, make them gray singles
         im = im2single(rgb2gray( imread( ...
-                                        strcat(FolderName, '/', frame.('name')) ...
+                                        strcat(FolderPath, '/', frame.('name')) ...
                       )));
 
         hog = vl_hog(im, wHOGCell);
         imhog = vl_hog('render', hog);
-        
+
         %Write results to image and mat File
-        imwrite(imhog, strcat(FolderName, FolderNameAdd, frameName, '_render.png'), 'png');
-        parsave(strcat(FolderName, FolderNameAdd, frameName, '_data.mat'), hog);
+        imwrite(imhog, strcat(FolderPath, FolderNameAdd, frameName, '_render.png'), 'png');
+        parsave(strcat(FolderPath, FolderNameAdd, frameName, '_data.mat'), hog);
     end;
 end;
 

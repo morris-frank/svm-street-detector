@@ -13,31 +13,31 @@ assert(scalingFactor > 0)
 assert(windowSize > 1)
 
 HeaderConfig
-global FOLDERNAMEBASE
+global FOLDERNAMEBASE DATAFOLDER
 
 FolderNameAdd = '_opticalflow';
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderName = strcat(FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
+    FolderPath = strcat(DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
 
-    mkdir(strcat(FolderName, FolderNameAdd));
-    frames = dir(strcat(FolderName, '/*png'));
+    mkdir(strcat(FolderPath, FolderNameAdd));
+    frames = dir(strcat(FolderPath, '/*png'));
 
     %Iterate through frames with two iterators
     parfor f = 1:length(frames)-1
         firstframe = frames(f);
         secframe = frames(f+1);
         frameName = strtok(firstframe.('name'), '.');
-        if exist(strcat(FolderName, FolderNameAdd, frameName, '_x.png'), 'file') && exist(strcat(FolderName, FolderNameAdd, frameName, '_y.png'), 'file')
+        if exist(strcat(FolderPath, FolderNameAdd, frameName, '_x.png'), 'file') && exist(strcat(FolderPath, FolderNameAdd, frameName, '_y.png'), 'file')
            continue
         end
-        disp(strcat(FolderName, ': ', frameName));
+        disp(strcat(FolderPath, ': ', frameName));
 
         %Read images, make them gray doubles and resize with given
         %scalingFactor
-        im1 = im2double(imread(strcat(FolderName, '/', firstframe.('name'))));
-        im2 = im2double(imread(strcat(FolderName, '/', secframe.('name'))));
+        im1 = im2double(imread(strcat(FolderPath, '/', firstframe.('name'))));
+        im2 = im2double(imread(strcat(FolderPath, '/', secframe.('name'))));
 
         im1 = rgb2gray(imresize(im1, scalingFactor, 'bicubic'));
         im2 = rgb2gray(imresize(im2, scalingFactor, 'bicubic'));
@@ -50,7 +50,7 @@ for FolderNumber = FolderNumbers
         [flow_y,~] = gray2ind(flow_y);
 
         %Write results to images
-        imwrite(flow_x, jet, strcat(FolderName, FolderNameAdd, frameName, '_x.png'), 'png');
-        imwrite(flow_y, jet, strcat(FolderName, FolderNameAdd, frameName, '_y.png'), 'png');
+        imwrite(flow_x, jet, strcat(FolderPath, FolderNameAdd, frameName, '_x.png'), 'png');
+        imwrite(flow_y, jet, strcat(FolderPath, FolderNameAdd, frameName, '_y.png'), 'png');
     end;
 end;

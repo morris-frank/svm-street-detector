@@ -15,18 +15,20 @@ if nargin < 6
     end
 end
 
-assert(exist(FolderName, 'dir') == 7)
-assert(exist(bbFileName, 'file') == 2)
-
 HeaderConfig
-global LIBSVM_PATH
+global LIBSVM_PATH DATAFOLDER
 addpath(LIBSVM_PATH)
+FolderPath = strcat(DATAFOLDER, FolderName);
+bbFilePath = strcat(DATAFOLDER, bbFileName);
 
-FolderNameAdd = '_train/';
-mkdir(strcat(FolderName, FolderNameAdd));
+assert(exist(FolderPath, 'dir') == 7)
+assert(exist(bbFilePath, 'file') == 2)
+
+FolderPathAdd = '_train/';
+mkdir(strcat(FolderPath, FolderPathAdd));
 
 %Load and parse all bounding boxes from the *.bb File
-BBFile = fopen(bbFileName);
+BBFile = fopen(bbFilePath);
 BBData = textscan(BBFile, 'seq%u16\\I%5u16.jpg    %u16 %u16 %u16 %u16    %1u16');
 %[1:FrameID, 2:CatID, 3:left, 4:top, 5:right, 6:bottom]
 BBMat  = cell2mat({BBData{2}, BBData{7}, BBData{3}, BBData{4}, BBData{5}, BBData{6}});
@@ -51,7 +53,7 @@ for b = sB:nBB
 
     %Load HOG features for this Bounding Box
     if BBMat(b,1) ~= oldFrameID
-        load(strcat(FolderName, '_hog/I', sprintf('%05d', BBMat(b, 1)), '_data.mat'));
+        load(strcat(FolderPath, '_hog/I', sprintf('%05d', BBMat(b, 1)), '_data.mat'));
         HOG = data; clear data
         [yHOG, xHOG, ~] = size(HOG);
         oldFrameID = BBMat(b,1);
@@ -80,7 +82,7 @@ for b = sB:nBB
 
     %Time to save some stuff eh
     if sI == MsI
-        libsvmwrite(strcat(FolderName, FolderNameAdd, num2str(b-MsI), '-', num2str(b), '.train'), labelVector, sparse(featureMatrix));
+        libsvmwrite(strcat(FolderPath, FolderPathAdd, num2str(b-MsI), '-', num2str(b), '.train'), labelVector, sparse(featureMatrix));
         sI = 0;
         disp(strcat(num2str(BBMat(b,1)), ': ', num2str(b/nBB*100), '%'));
     end
