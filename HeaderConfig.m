@@ -1,11 +1,16 @@
 function HeaderConfig()
 
-global VLFEAT_PATH LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER
+global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER HOGCELLSIZE BBSIZE
 
-VLFEAT_PATH = 'vlfeat/toolbox/';
-LIBSVM_PATH = './libsvm-3.21/matlab/';
+LIBSVM_PATH = '/home/morris/var/lib/liblinear-2.1/matlab';
 FOLDERNAMEBASE = 'seq';
-DATAFOLDER = '/home/morris/var/data/IAP/'
+DATAFOLDER = '/home/morris/var/data/IAP/';
+
+HOGCELLSIZE = 9;
+
+%Size of the Bounding Boxes in multiplies of HOGCELLSIZE:
+BBSIZE = 3;
+
 
 
 end

@@ -1,19 +1,19 @@
 function FrameHeatMap(FolderName, f, Model, wBB, wHOGCell, numOrient)
 
+HeaderConfig
+global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER HOGCELLSIZE BBSIZE
+addpath(LIBSVM_PATH)
+FolderPath = strcat(DATAFOLDER, FolderName);
+
 if nargin < 6
     numOrient = 9;
     if nargin < 5
-        wHOGCell = 9;
+        wHOGCell = HOGCELLSIZE;
         if nargin < 4
-            wBB = 9;
+            wBB = BBSIZE;
         end
     end
 end
-
-HeaderConfig
-global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER
-addpath(LIBSVM_PATH)
-FolderPath = strcat(DATAFOLDER, FolderName);
 
 assert(exist(FolderPath, 'dir') == 7)
 assert(exist(strcat(FolderPath, '_hog/'), 'dir') == 7)
@@ -39,7 +39,7 @@ for posX = 1:(xHOG - wBB)
     end
 end
 
-[PredictLabels] = svmpredict(PredictLabels, PredictInstantMat, Model);
+[PredictLabels] = predict(PredictLabels, PredictInstantMat, Model);
 clear PredictInstantMat
 
 HeatMap = zeros(IM_Y, IM_X);

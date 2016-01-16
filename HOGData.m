@@ -8,11 +8,8 @@ assert(min(FolderNumbers) >= 0)
 assert(wHOGCell > 0)
 
 HeaderConfig
-global VLFEAT_PATH FOLDERNAMEBASE DATAFOLDER
+global FOLDERNAMEBASE DATAFOLDER
 FolderNameAdd = '_hog/';
-cd(VLFEAT_PATH)
-vl_setup
-cd ../../
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
