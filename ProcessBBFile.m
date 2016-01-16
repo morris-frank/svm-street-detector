@@ -50,7 +50,7 @@ im = im2single(rgb2gray(imread(strcat(...
         FolderPath, '/I', sprintf('%05d', BBMat(1, 1)), '.jpg'...
         ))));
 oldFrameID = BBMat(1, 1);
-imsize = size(im);
+[im_y, im_x] = size(im);
 
 %Iterate over the Bounding Boxes
 for b = sB:nBB
@@ -61,11 +61,11 @@ for b = sB:nBB
         oldFrameID = BBMat(b, 1);
     end
 
-    middle = [min(imsize(1)-hBBWidth, max(hBBWidth, floor((BBMat(b,3)+BBMat(b,5))/2))),...
-        min(imsize(2)-hBBWidth, max(hBBWidth, floor((BBMat(b,4)+BBMat(b,6))/2)))];
-    x = [middle(1)-hBBWidth : middle(1)+hBBWidth];
-    y = [middle(2)-hBBWidth : middle(2)+hBBWidth];
-    impart = im(x,y);
+    middle = [min(im_y-hBBWidth, max(hBBWidth, floor((BBMat(b,4)+BBMat(b,6))/2))),...
+        min(im_x-hBBWidth, max(hBBWidth, floor((BBMat(b,3)+BBMat(b,5))/2)))];
+    y = [middle(1)-hBBWidth : middle(1)+hBBWidth];
+    x = [middle(2)-hBBWidth : middle(2)+hBBWidth];
+    impart = im(y, x);
 
     hog = vl_hog(impart, wHOGCell);
     hog = reshape(hog, 1, []);
