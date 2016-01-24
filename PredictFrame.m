@@ -33,7 +33,6 @@ PredictLabels = double(zeros((hog_y-wBB)*(hog_x-wBB), 1));
 %Slide over image size
 for posX = 1:(hog_x - wBB)
    for posY = 1:(hog_y - wBB)
-       posX*posY / ((hog_x-wBB)*(hog_y-wBB))
        impart = im((posY-1)*wHOGCell+1 : (posY-1)*wHOGCell + wBB*wHOGCell,...
           (posX-1)*wHOGCell+1 : (posX-1)*wHOGCell + wBB*wHOGCell);
        hog = vl_hog(impart, wHOGCell);
@@ -48,13 +47,19 @@ clear PredictInstantMat
 HeatMap = zeros(im_y, im_x);
 for posX = 1:(hog_x - wBB)
    for posY = 1:(hog_y - wBB)
-       posX*posY / ((hog_x-wBB)*(hog_y-wBB))
        if PredictLabels(posX*posY) == 1
            rX = (posX-1)*wHOGCell;
            rY = (posY-1)*wHOGCell;
            rW = wBB*wHOGCell;
            HeatMap(rY+1:rY+rW, rX+1:rX+rW) = HeatMap(rY+1:rY+rW, rX+1:rX+rW) + 1;
        end
+       if PredictLabels(posX*posY) == 0
+           rX = (posX-1)*wHOGCell;
+           rY = (posY-1)*wHOGCell;
+           rW = wBB*wHOGCell;
+           HeatMap(rY+1:rY+rW, rX+1:rX+rW) = HeatMap(rY+1:rY+rW, rX+1:rX+rW) - 1;
+       end
+       
    end
 end
 
