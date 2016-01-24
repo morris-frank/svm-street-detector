@@ -44,31 +44,36 @@ end
 [PredictLabels] = predict(PredictLabels, PredictInstantMat, Model);
 clear PredictInstantMat
 
-HeatMap = zeros(im_y, im_x);
+%HeatMapNegativ = zeros(im_y, im_x);
+HeatMapPositiv = zeros(im_y, im_x);
 for posX = 1:(hog_x - wBB)
    for posY = 1:(hog_y - wBB)
+       %if PredictLabels(posX*posY) == 0
+       %    rX = (posX-1)*wHOGCell;
+       %    rY = (posY-1)*wHOGCell;
+       %    rW = wBB*wHOGCell;
+       %    HeatMapNegativ(rY+1:rY+rW, rX+1:rX+rW) = HeatMapNegativ(rY+1:rY+rW, rX+1:rX+rW) + 1;
+       %end
        if PredictLabels(posX*posY) == 1
            rX = (posX-1)*wHOGCell;
            rY = (posY-1)*wHOGCell;
            rW = wBB*wHOGCell;
-           HeatMap(rY+1:rY+rW, rX+1:rX+rW) = HeatMap(rY+1:rY+rW, rX+1:rX+rW) + 1;
+           HeatMapPositiv(rY+1:rY+rW, rX+1:rX+rW) = HeatMapPositiv(rY+1:rY+rW, rX+1:rX+rW) + 1;
        end
-       if PredictLabels(posX*posY) == 0
-           rX = (posX-1)*wHOGCell;
-           rY = (posY-1)*wHOGCell;
-           rW = wBB*wHOGCell;
-           HeatMap(rY+1:rY+rW, rX+1:rX+rW) = HeatMap(rY+1:rY+rW, rX+1:rX+rW) - 1;
-       end
-       
+
    end
 end
 
-HeatMap = HeatMap / max(HeatMap(:));
+%HeatMapNegativ = HeatMapNegativ / max(HeatMapNegativ(:));
+HeatMapPositiv = HeatMapPositiv / max(HeatMapPositiv(:));
 imshow(im, 'InitialMag', 'fit')
-Red = cat(3, ones(size(im)), zeros(size(im)), zeros(size(im)));
+%Red = cat(3, ones(size(im)), zeros(size(im)), zeros(size(im)));
+Green = cat(3, zeros(size(im)), ones(size(im)), zeros(size(im)));
 hold on
-h = imshow(Red);
+%hn = imshow(Red);
+hp = imshow(Green);
 hold off
-set(h, 'AlphaData', HeatMap)
+%set(hn, 'AlphaData', HeatMapNegativ)
+set(hp, 'AlphaData', HeatMapPositiv)
 
 end
