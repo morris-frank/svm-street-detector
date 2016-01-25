@@ -1,18 +1,21 @@
-function ProcessBBFile(bbFileName, FolderName, sB, MwBB, wHOGCell, numOrient)
+function ProcessBBFile(bbFileName, FolderName, permut, sB, MwBB, wHOGCell, numOrient)
 % Converts the BoundingBoxes on a *.bb file to SVM train data
 % ProcessBBFile(bbFileName, FolderName)
 
 HeaderConfig
 global LIBSVM_PATH DATAFOLDER HOGCELLSIZE BBSIZE
 
-if nargin < 6
+if nargin < 7
     numOrient = 9;
-    if nargin < 5
+    if nargin < 6
         wHOGCell = HOGCELLSIZE;
-        if nargin < 4
+        if nargin < 5
             MwBB = BBSIZE;
-            if nargin < 3
+            if nargin < 4
                 sB = 1;
+                if nargin < 3
+                    permut = 0;
+                end
             end
         end
     end
@@ -63,17 +66,28 @@ for b = sB:nBB
 
     middle = [min(im_y-hBBWidth, max(hBBWidth, floor((BBMat(b,4)+BBMat(b,6))/2))),...
         min(im_x-hBBWidth, max(hBBWidth, floor((BBMat(b,3)+BBMat(b,5))/2)))];
-    y = [middle(1)-hBBWidth : middle(1)+hBBWidth];
-    x = [middle(2)-hBBWidth : middle(2)+hBBWidth];
+    y = middle(1)-hBBWidth : middle(1)+hBBWidth;
+    x = middle(2)-hBBWidth : middle(2)+hBBWidth;
     impart = im(y, x);
 
     hog = vl_hog(impart, wHOGCell);
-    perm = vl_hog('permutation');
-    flippedHog =;
-    hog = reshape(hog, 1, []);
-    featureMatrix(b, :) = [hog, imhist(impart)'];
+    if permut == 0
+        hog = reshape(hog, 1, []);
+        featureMatrix(b, :) = [hog, imhist(impart)'];
+    else
+        perm = vl_hog('permutation');
+        flippedHog = hog(perm);
+        size(flippedHog)
+        size(hog)
+        flippedHog = reshape(flippedHog, 1, []);
+        featureMatrix(b, :) = [flippedHog, imhist(impart)'];
+    end
     labelVector(b) = BBMat(b, 2);
 
 end
+
+if perm == 0
     libsvmwrite(strcat(bbFileName, '.train'), labelVector, sparse(featureMatrix));
+else
+    libsvmwrite(strcat(bbFileName, '-flipped.train'), labelVector, sparse(featureMatrix));
 end
