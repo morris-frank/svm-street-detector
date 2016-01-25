@@ -68,6 +68,8 @@ for b = sB:nBB
     impart = im(y, x);
 
     hog = vl_hog(impart, wHOGCell);
+    perm = vl_hog('permutation');
+    flippedHog =;
     hog = reshape(hog, 1, []);
     featureMatrix(b, :) = [hog, imhist(impart)'];
     labelVector(b) = BBMat(b, 2);
