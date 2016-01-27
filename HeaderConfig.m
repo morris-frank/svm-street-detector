@@ -6,11 +6,11 @@ FOLDERNAMEBASE = 'seq';
 DATAFOLDER = '/home/morris/var/data/IAP/';
 
 global HOGCELLSIZE
-HOGCELLSIZE = 9;
+HOGCELLSIZE = 17;
 
 %Size of the Bounding Boxes in multiplies of HOGCELLSIZE:
-global BBSIZE
-BBSIZE = 3;
+global COUNTOFHOG
+COUNTOFHOG = 3;
 
 %The Options for liblinear
 global LLTYPE LLC LLE
