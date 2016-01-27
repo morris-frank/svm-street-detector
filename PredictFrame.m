@@ -27,8 +27,8 @@ im = im2single(rgb2gray(imread(strcat(FolderPath, '/', strcat('I', sprintf('%05d
 hog_x = floor(im_x/wHOGCell);
 hog_y = floor(im_y/wHOGCell);
 
-PredictInstantMat = sparse(double(zeros((hog_y-wBB)*(hog_x-wBB), 256 + wBB^2*(numOrient*3+4))));
-PredictLabels = double(zeros((hog_y-wBB)*(hog_x-wBB), 1));
+instanceVector = double(zeros((hog_y-wBB)*(hog_x-wBB), 256 + wBB^2*(numOrient*3+4)));
+labelVector = double(zeros((hog_y-wBB)*(hog_x-wBB), 1));
 
 %Slide over image size
 for posX = 1:(hog_x - wBB)
@@ -36,25 +36,28 @@ for posX = 1:(hog_x - wBB)
        impart = im((posY-1)*wHOGCell+1 : (posY-1)*wHOGCell + wBB*wHOGCell,...
           (posX-1)*wHOGCell+1 : (posX-1)*wHOGCell + wBB*wHOGCell);
        hog = vl_hog(impart, wHOGCell);
-       PredictInstantMat(posX*posY, :) = [reshape(hog, 1, []), imhist(impart)'];
-       PredictLabels(posX*posY) = rand(1) > 0.5;
+       perm = vl_hog('permutation');
+       hog = hog(:, end:-1:1, perm);
+       instanceVector(posX*posY, :) = [reshape(hog, 1, []), imhist(impart)']/norm([reshape(hog, 1, []), imhist(impart)']);
+       labelVector(posX*posY) = rand(1) > 0.5;
     end
 end
 
-[PredictLabels] = predict(PredictLabels, PredictInstantMat, Model);
-clear PredictInstantMat
+instanceVector = sparse(instanceVector);
+[labelVector] = predict(labelVector, instanceVector, Model);
+clear instanceVector
 
-%HeatMapNegativ = zeros(im_y, im_x);
+HeatMapNegativ = zeros(im_y, im_x);
 HeatMapPositiv = zeros(im_y, im_x);
 for posX = 1:(hog_x - wBB)
    for posY = 1:(hog_y - wBB)
-       %if PredictLabels(posX*posY) == 0
-       %    rX = (posX-1)*wHOGCell;
-       %    rY = (posY-1)*wHOGCell;
-       %    rW = wBB*wHOGCell;
-       %    HeatMapNegativ(rY+1:rY+rW, rX+1:rX+rW) = HeatMapNegativ(rY+1:rY+rW, rX+1:rX+rW) + 1;
-       %end
-       if PredictLabels(posX*posY) == 1
+       if labelVector(posX*posY) == 0
+           rX = (posX-1)*wHOGCell;
+           rY = (posY-1)*wHOGCell;
+           rW = wBB*wHOGCell;
+           HeatMapNegativ(rY+1:rY+rW, rX+1:rX+rW) = HeatMapNegativ(rY+1:rY+rW, rX+1:rX+rW) + 1;
+       end
+       if labelVector(posX*posY) == 1
            rX = (posX-1)*wHOGCell;
            rY = (posY-1)*wHOGCell;
            rW = wBB*wHOGCell;
@@ -64,16 +67,21 @@ for posX = 1:(hog_x - wBB)
    end
 end
 
-%HeatMapNegativ = HeatMapNegativ / max(HeatMapNegativ(:));
+HeatMapNegativ = HeatMapNegativ / max(HeatMapNegativ(:));
 HeatMapPositiv = HeatMapPositiv / max(HeatMapPositiv(:));
-imshow(im, 'InitialMag', 'fit')
-%Red = cat(3, ones(size(im)), zeros(size(im)), zeros(size(im)));
+Red = cat(3, ones(size(im)), zeros(size(im)), zeros(size(im)));
 Green = cat(3, zeros(size(im)), ones(size(im)), zeros(size(im)));
+figure('WindowStyle', 'docked', 'NumberTitle', 'Off', 'Name', strcat(FolderName, ' ', num2str(f), ' Neg'));
+imshow(im, 'InitialMag', 'fit')
 hold on
-%hn = imshow(Red);
+hn = imshow(Red);
+hold off
+set(hn, 'AlphaData', HeatMapNegativ)
+figure('WindowStyle', 'docked', 'NumberTitle', 'Off', 'Name', strcat(FolderName, ' ', num2str(f), ' Pos'));
+imshow(im, 'InitialMag', 'fit')
+hold on
 hp = imshow(Green);
 hold off
-%set(hn, 'AlphaData', HeatMapNegativ)
 set(hp, 'AlphaData', HeatMapPositiv)
 
 end

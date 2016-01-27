@@ -13,9 +13,11 @@ global BBSIZE
 BBSIZE = 3;
 
 %The Options for liblinear
-global LLTYPE LLC
+global LLTYPE LLC LLE
 LLTYPE = 2;
-LLC = 4.8828e-04;
+%LLC = 4.8828e-04;
+LLC = 1e1;
+LLE = 1e-2;
 
 
 

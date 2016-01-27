@@ -28,9 +28,6 @@ bbFilePath = strcat(DATAFOLDER, bbFileName);
 assert(exist(FolderPath, 'dir') == 7)
 assert(exist(bbFilePath, 'file') == 2)
 
-FolderPathAdd = '_train/';
-mkdir(strcat(FolderPath, FolderPathAdd));
-
 %Load and parse all bounding boxes from the *.bb File
 BBFile = fopen(bbFilePath);
 BBData = textscan(BBFile, 'seq%u16\\I%5u16.jpg    %u16 %u16 %u16 %u16    %1u16');
@@ -44,7 +41,7 @@ clear BBData BBFile;
 assert(sB < nBB)
 
 labelVector = double(zeros(nBB, 1));
-featureMatrix = double(zeros(nBB, 256 + MwBB^2 * (3*numOrient+4)));
+instanceVector = double(zeros(nBB, 256 + MwBB^2 * (3*numOrient+4)));
 
 BBWidth = MwBB * wHOGCell;
 hBBWidth = floor(BBWidth/2);
@@ -71,23 +68,18 @@ for b = sB:nBB
     impart = im(y, x);
 
     hog = vl_hog(impart, wHOGCell);
-    if permut == 0
-        hog = reshape(hog, 1, []);
-        featureMatrix(b, :) = [hog, imhist(impart)'];
-    else
+    if permut ~= 0
         perm = vl_hog('permutation');
-        flippedHog = hog(perm);
-        size(flippedHog)
-        size(hog)
-        flippedHog = reshape(flippedHog, 1, []);
-        featureMatrix(b, :) = [flippedHog, imhist(impart)'];
+        hog = hog(:, end:-1:1, perm);
     end
+    hog = reshape(hog, 1, []);
+    instanceVector(b, :) = [hog, imhist(impart)']/norm([hog, imhist(impart)']);
     labelVector(b) = BBMat(b, 2);
 
 end
 
-if perm == 0
-    libsvmwrite(strcat(bbFileName, '.train'), labelVector, sparse(featureMatrix));
+if permut == 0
+    libsvmwrite(strcat(bbFileName, '.train'), labelVector, sparse(instanceVector));
 else
-    libsvmwrite(strcat(bbFileName, '-flipped.train'), labelVector, sparse(featureMatrix));
+    libsvmwrite(strcat(bbFileName, '-flipped.train'), labelVector, sparse(instanceVector));
 end
