@@ -48,8 +48,8 @@ instanceVector = double(zeros(nBB, 256 + CountOfHOG^2 * (3*numOrient+4)));
 
 %Load first Image
 im = im2single(rgb2gray(imread(strcat(...
-        FolderPath, '/I', sprintf('%05d', BBMat(1, 1)), '.jpg'...
-        ))));
+    FolderPath, '/I', sprintf('%05d', BBMat(1, 1)), '.jpg'...
+))));
 oldFrameID = BBMat(1, 1);
 
 %The size of the images, assuming it will not change

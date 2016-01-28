@@ -54,47 +54,47 @@ it = 1
 
 %Slide over image
 for y = slide_top : SlideSize : im_y-slide_top-1
-  for x = slide_left : SlideSize : im_x-slide_left-1
+    for x = slide_left : SlideSize : im_x-slide_left-1
 
-    %The y-values of the sliding window
-    Y = y : y+SlideSize-1;
-    %The x-values of the sliding window
-    X = x : x+SlideSize-1;
+        %The y-values of the sliding window
+        Y = y : y+SlideSize-1;
+        %The x-values of the sliding window
+        X = x : x+SlideSize-1;
 
-    %The image data for this window
-    impart = im(Y, X);
+        %The image data for this window
+        impart = im(Y, X);
 
-    %Resize window to right size of needed
-    if BBWidth ~= SlideSize
-      impart = imresize(impart, [BBWidth BBWidth]);
+        %Resize window to right size of needed
+        if BBWidth ~= SlideSize
+            impart = imresize(impart, [BBWidth BBWidth]);
+        end
+
+        %Compute the HOG features
+        hog = vl_hog(impart, HOGCellSize);
+
+        %If flipping is demanded permute the HOG features
+        if permut ~= 0
+             perm = vl_hog('permutation');
+             hog = hog(:, end:-1:1, perm);
+        end
+
+        %Make floats from HOG features a vector and normalize it
+        hog = reshape(hog, 1, []);
+        hog = hog/norm(hog);
+
+        %Get color histogram and normalize it
+        hist = imhist(impart)';
+        hist = hist/norm(hist);
+
+        %Write the features as a instance
+        instanceVector(it, :) = [hog hist];
+        %Use a random label, as we don't know the real one
+        labelVector(it) = rand(1) > 0.5;
+
+        %increment the index for the next instance
+        it = it + 1;
+
     end
-
-    %Compute the HOG features
-    hog = vl_hog(impart, HOGCellSize);
-
-    %If flipping is demanded permute the HOG features
-    if permut ~= 0
-       perm = vl_hog('permutation');
-       hog = hog(:, end:-1:1, perm);
-    end
-
-    %Make floats from HOG features a vector and normalize it
-    hog = reshape(hog, 1, []);
-    hog = hog/norm(hog);
-
-    %Get color histogram and normalize it
-    hist = imhist(impart)';
-    hist = hist/norm(hist);
-
-    %Write the features as a instance
-    instanceVector(it, :) = [hog hist];
-    %Use a random label, as we don't know the real one
-    labelVector(it) = rand(1) > 0.5;
-
-    %increment the index for the next instance
-    it = it + 1;
-
-  end
 end
 
 %Make the instanceVector sparse, as liblinear requires just that
@@ -117,29 +117,29 @@ it = 1;
 
 %Slide over image
 for y = slide_top : SlideSize : im_y-slide_top-1
-  for x = slide_left : SlideSize : im_x-slide_left-1
+    for x = slide_left : SlideSize : im_x-slide_left-1
 
-    %The y-values of the sliding window
-    Y = y : y+SlideSize-1;
-    %The x-values of the sliding window
-    X = x : x+SlideSize-1;
+        %The y-values of the sliding window
+        Y = y : y+SlideSize-1;
+        %The x-values of the sliding window
+        X = x : x+SlideSize-1;
 
-    %The Model predicted a negativ label, so we increase the Negativ Heat Map
-    %for that area
-    if labelVector(it) == 0
-      HeatMapNegativ(Y, X) = HeatMapNegativ(Y, X) + 1;
+        %The Model predicted a negativ label, so we increase the Negativ Heat Map
+        %for that area
+        if labelVector(it) == 0
+            HeatMapNegativ(Y, X) = HeatMapNegativ(Y, X) + 1;
+        end
+
+        %The Model predicted a positiv label, so we increase the Positiv Heat Map
+        %for that area
+        if labelVector(it) == 1
+            HeatMapPositiv(Y, X) = HeatMapPositiv(Y, X) + 1;
+        end
+
+        %increment the index for the next instance
+        it = it + 1;
+
     end
-
-    %The Model predicted a positiv label, so we increase the Positiv Heat Map
-    %for that area
-    if labelVector(it) == 1
-      HeatMapPositiv(Y, X) = HeatMapPositiv(Y, X) + 1;
-    end
-
-    %increment the index for the next instance
-    it = it + 1;
-
-  end
 end
 
 %Normalize the HeatMaps
