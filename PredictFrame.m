@@ -34,9 +34,18 @@ im = im2single(rgb2gray(imread(strcat(FolderPath, '/', strcat('I', sprintf('%05d
 %With & Height of the sliding window used
 SlideSize = 51;
 
+%Amount of pixels the window is moved in every step
+SliderStep = floor(SlideSize/2);
+
+assert(SliderStep <= SlideSize)
+
 %Get left and top start of the sliding window grid
 slide_top = mod(im_y, SlideSize) / 2;
 slide_left = mod(im_x, SlideSize) / 2;
+
+%To avoid that we start at pixel 0, which doesn't exist
+slide_top = min(1, slide_top);
+slide_left = min(1, slide_left);
 
 %Get the number of windows we will predict for:
 NumberOfSlides = size(slide_top : SlideSize : im_y-slide_top-1, 2)...
@@ -46,15 +55,15 @@ NumberOfSlides = size(slide_top : SlideSize : im_y-slide_top-1, 2)...
 %First: Get prediction for the labels of a sliding window
 %--------------------------------------------------------
 
-instanceVector = double(zeros(NumberOfSlides, 256 + CountfHOG^2*(numOrient*3+4)));
+instanceVector = double(zeros(NumberOfSlides, 256 + CountOfHOG^2*(numOrient*3+4)));
 labelVector = double(zeros(NumberOfSlides, 1));
 
 %The index of the instance in the instanceVector
-it = 1
+it = 1;
 
 %Slide over image
-for y = slide_top : SlideSize : im_y-slide_top-1
-    for x = slide_left : SlideSize : im_x-slide_left-1
+for y = slide_top : SliderStep : im_y-SlideSize
+    for x = slide_left : SliderStep : im_x-SlideSize
 
         %The y-values of the sliding window
         Y = y : y+SlideSize-1;
@@ -116,8 +125,8 @@ HeatMapPositiv = zeros(im_y, im_x);
 it = 1;
 
 %Slide over image
-for y = slide_top : SlideSize : im_y-slide_top-1
-    for x = slide_left : SlideSize : im_x-slide_left-1
+for y = slide_top : SliderStep : im_y-SlideSize
+    for x = slide_left : SliderStep : im_x-SlideSize
 
         %The y-values of the sliding window
         Y = y : y+SlideSize-1;
@@ -153,7 +162,7 @@ Green = cat(3, zeros(size(im)), ones(size(im)), zeros(size(im)));
 
 %Make a new figure for the negativ HeatMap
 figure('Name', strcat(FolderName, '-', num2str(f), ' Neg'), 'WindowStyle', 'docked', 'NumberTitle', 'Off');
-%imshow(im, 'InitialMag', 'fit')
+imshow(im, 'InitialMag', 'fit')
 hold on
 hn = imshow(Red);
 hold off
@@ -161,7 +170,7 @@ set(hn, 'AlphaData', HeatMapNegativ)
 
 %Make a new figure for the positiv HeatMap
 figure('Name', strcat(FolderName, '-', num2str(f), ' Pos'), 'WindowStyle', 'docked', 'NumberTitle', 'Off');
-%imshow(im, 'InitialMag', 'fit')
+imshow(im, 'InitialMag', 'fit')
 hold on
 hp = imshow(Green);
 hold off

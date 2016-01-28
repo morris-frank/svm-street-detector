@@ -1,15 +1,12 @@
-function ProcessBBFile(bbFileName, FolderName, permut, startBB)
+function ProcessBBFile(bbFileName, FolderName, permut)
 % Converts the BoundingBoxes on a *.bb file to SVM train data
 % ProcessBBFile(bbFileName, FolderName)
 
 HeaderConfig
 global LIBSVM_PATH DATAFOLDER HOGCELLSIZE COUNTOFHOG
 
-if nargin < 4
-    startBB = 1;
-    if nargin < 3
-        permut = 0;
-    end
+if nargin < 3
+    permut = 0;
 end
 
 addpath(LIBSVM_PATH)
@@ -28,7 +25,7 @@ HOGCellSize = HOGCELLSIZE;
 CountOfHOG = COUNTOFHOG;
 %Width of a normalized Bounding Box in real pixels
 BBWidth = CountOfHOG * HOGCellSize;
-HalfBBWidth = floor(BBWidth);
+HalfBBWidth = floor(BBWidth/2);
 
 %Load and parse all bounding boxes from the *.bb File
 BBFile = fopen(bbFilePath);
@@ -41,7 +38,8 @@ clear BBData BBFile;
 
 nBB = size(BBMat, 1);
 
-assert(startBB < nBB)
+%Assume that we start with the first picture
+startBB = 1;
 
 labelVector = double(zeros(nBB, 1));
 instanceVector = double(zeros(nBB, 256 + CountOfHOG^2 * (3*numOrient+4)));
