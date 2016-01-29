@@ -9,24 +9,22 @@ FolderNameAdd = '_edge/';
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderPath = strcat(DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
+    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
 
-    mkdir(strcat(FolderPath, FolderNameAdd));
-    frames = dir(strcat(FolderPath, '/*jpg'));
+    mkdir([FolderPath, FolderNameAdd]);
 
     %Iterate through frames with two iterators
-    parfor f = 1:length(frames)
-        frame = frames(f)
+    parfor frame = dir([FolderPath, '/*jpg'])'
         frameName = strtok(frame.('name'), '.');
-        if exist(strcat(FolderPath, FolderNameAdd, frameName, '_canny.jpg'), 'file') && exist(strcat(FolderPath, FolderNameAdd, frameName, '_prewitt.jpg'), 'file')
+        if exist([FolderPath, FolderNameAdd, frameName, '_canny.jpg'], 'file') && exist([FolderPath, FolderNameAdd, frameName, '_prewitt.jpg'], 'file')
            continue
         end
-        disp(strcat(FolderPath, ': ', frameName));
+        disp([FolderPath, ': ', frameName]);
 
         %Read image, make them gray doubles
         %and put into gpuarray
         Im = rgb2gray( imread( ...
-                                    strcat(FolderPath, '/', frame.('name')) ...
+                                    [FolderPath, '/', frame.('name')] ...
                      ));
 
         %Calculate canny and prewitt pictures:
@@ -39,7 +37,7 @@ for FolderNumber = FolderNumbers
         canny = edge(Im, 'canny', [0.03, 0.085])
 
         %Write results to images
-        imwrite(canny, strcat(FolderPath, FolderNameAdd, frameName, '_canny.png'), 'png');
-        imwrite(prewitt, strcat(FolderPath, FolderNameAdd, frameName, '_prewitt.png'), 'png');
+        imwrite(canny, [FolderPath, FolderNameAdd, frameName, '_canny.png'], 'png');
+        imwrite(prewitt, [FolderPath, FolderNameAdd, frameName, '_prewitt.png'], 'png');
     end;
 end;

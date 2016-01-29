@@ -19,25 +19,25 @@ FolderNameAdd = '_opticalflow';
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderPath = strcat(DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
+    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
 
-    mkdir(strcat(FolderPath, FolderNameAdd));
-    frames = dir(strcat(FolderPath, '/*png'));
+    mkdir([FolderPath, FolderNameAdd]);
+    frames = dir([FolderPath, '/*png']);
 
     %Iterate through frames with two iterators
     parfor f = 1:length(frames)-1
         firstframe = frames(f);
         secframe = frames(f+1);
         frameName = strtok(firstframe.('name'), '.');
-        if exist(strcat(FolderPath, FolderNameAdd, frameName, '_x.png'), 'file') && exist(strcat(FolderPath, FolderNameAdd, frameName, '_y.png'), 'file')
+        if exist([FolderPath, FolderNameAdd, frameName, '_x.png'], 'file') && exist([FolderPath, FolderNameAdd, frameName, '_y.png'], 'file')
            continue
         end
-        disp(strcat(FolderPath, ': ', frameName));
+        disp([FolderPath, ': ', frameName]);
 
         %Read images, make them gray doubles and resize with given
         %scalingFactor
-        im1 = im2double(imread(strcat(FolderPath, '/', firstframe.('name'))));
-        im2 = im2double(imread(strcat(FolderPath, '/', secframe.('name'))));
+        im1 = im2double(imread([FolderPath, '/', firstframe.('name')]));
+        im2 = im2double(imread([FolderPath, '/', secframe.('name')]));
 
         im1 = rgb2gray(imresize(im1, scalingFactor, 'bicubic'));
         im2 = rgb2gray(imresize(im2, scalingFactor, 'bicubic'));
@@ -50,7 +50,7 @@ for FolderNumber = FolderNumbers
         [flow_y,~] = gray2ind(flow_y);
 
         %Write results to images
-        imwrite(flow_x, jet, strcat(FolderPath, FolderNameAdd, frameName, '_x.png'), 'png');
-        imwrite(flow_y, jet, strcat(FolderPath, FolderNameAdd, frameName, '_y.png'), 'png');
+        imwrite(flow_x, jet, [FolderPath, FolderNameAdd, frameName, '_x.png'], 'png');
+        imwrite(flow_y, jet, [FolderPath, FolderNameAdd, frameName, '_y.png'], 'png');
     end;
 end;

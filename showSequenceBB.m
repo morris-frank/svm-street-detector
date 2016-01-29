@@ -8,11 +8,11 @@ global FOLDERNAMEBASE DATAFOLDER
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderPath = strcat(DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
+    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
 
-    frames = dir(strcat(FolderPath, '/*jpg'));
+    frames = dir([FolderPath, '/*jpg']);
 
-    BBFile = fopen(strcat(FolderPath, '.bb'));
+    BBFile = fopen([FolderPath, '.bb']);
     BBData = textscan(BBFile, 'seq%u16\\I%5u16.jpg\t%u16 %u16 %u16 %u16\t%1u16');
     %[1:FrameID, 2:CatID, 3:left, 4:top, 5:right, 6:bottom]
     BBMat = cell2mat({BBData{2}, BBData{7}, BBData{3}, BBData{4}, BBData{5}, BBData{6}});
@@ -27,7 +27,7 @@ for FolderNumber = FolderNumbers
 
         %Read image, make them gray singles
         im = im2single(rgb2gray( imread( ...
-                                        strcat(FolderPath, '/', frame.('name')) ...
+                                        [FolderPath, '/', frame.('name')] ...
                       )));
 
         imshow(im), hold on

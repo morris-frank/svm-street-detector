@@ -13,31 +13,29 @@ FolderNameAdd = '_hog/';
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderPath = strcat(DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
+    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
 
-    mkdir(strcat(FolderPath, FolderNameAdd));
-    frames = dir(strcat(FolderPath, '/*jpg'));
+    mkdir([FolderPath, FolderNameAdd]);
 
     %Iterate through frames with two iterators
-    parfor f = 1:length(frames)
-        frame = frames(f)
+    parfor frame = dir([FolderPath, '/*jpg'])'
         frameName = strtok(frame.('name'), '.');
-        if exist(strcat(FolderPath, FolderNameAdd, frameName, '_render.png'), 'file') && exist(strcat(FolderPath, FolderNameAdd, frameName, '_data.mat'), 'file')
+        if exist([FolderPath, FolderNameAdd, frameName, '_render.png'], 'file') && exist([FolderPath, FolderNameAdd, frameName, '_data.mat'], 'file')
            continue
         end
-        disp(strcat(FolderPath, ': ', frameName));
+        disp([FolderPath, ': ', frameName]);
 
         %Read image, make them gray singles
         im = im2single(rgb2gray( imread( ...
-                                        strcat(FolderPath, '/', frame.('name')) ...
+                                        [FolderPath, '/', frame.('name')] ...
                       )));
 
         hog = vl_hog(im, wHOGCell);
         imhog = vl_hog('render', hog);
 
         %Write results to image and mat File
-        imwrite(imhog, strcat(FolderPath, FolderNameAdd, frameName, '_render.png'), 'png');
-        parsave(strcat(FolderPath, FolderNameAdd, frameName, '_data.mat'), hog);
+        imwrite(imhog, [FolderPath, FolderNameAdd, frameName, '_render.png'], 'png');
+        parsave([FolderPath, FolderNameAdd, frameName, '_data.mat'], hog);
     end;
 end;
 
