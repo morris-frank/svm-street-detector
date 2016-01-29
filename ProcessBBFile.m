@@ -11,8 +11,8 @@ end
 
 addpath(LIBSVM_PATH)
 
-FolderPath = strcat(DATAFOLDER, FolderName);
-bbFilePath = strcat(DATAFOLDER, bbFileName);
+FolderPath = [DATAFOLDER, FolderName];
+bbFilePath = [DATAFOLDER, bbFileName];
 
 assert(exist(FolderPath, 'dir') == 7)
 assert(exist(bbFilePath, 'file') == 2)
@@ -45,9 +45,9 @@ labelVector = double(zeros(nBB, 1));
 instanceVector = double(zeros(nBB, 256 + CountOfHOG^2 * (3*numOrient+4)));
 
 %Load first Image
-im = im2single(rgb2gray(imread(strcat(...
-    FolderPath, '/I', sprintf('%05d', BBMat(1, 1)), '.jpg'...
-))));
+im = im2single(rgb2gray(imread(...
+    [FolderPath, '/I', sprintf('%05d', BBMat(1, 1)), '.jpg']...
+)));
 oldFrameID = BBMat(1, 1);
 
 %The size of the images, assuming it will not change
@@ -58,9 +58,9 @@ for b = startBB:nBB
 
     %If the Bounding Box is on a different picture, load it
     if BBMat(b, 1) ~= oldFrameID
-        im = im2single(rgb2gray(imread(strcat(...
-                FolderPath, '/I', sprintf('%05d', BBMat(b, 1)), '.jpg'...
-                ))));
+        im = im2single(rgb2gray(imread(...
+            [FolderPath, '/I', sprintf('%05d', BBMat(b, 1)), '.jpg']...
+        )));
         oldFrameID = BBMat(b, 1);
     end
 
@@ -105,7 +105,7 @@ for b = startBB:nBB
 end
 
 if permut == 0
-    libsvmwrite(strcat(bbFileName, '.train'), labelVector, sparse(instanceVector));
+    libsvmwrite([bbFileName, '.train'], labelVector, sparse(instanceVector));
 else
-    libsvmwrite(strcat(bbFileName, '-flipped.train'), labelVector, sparse(instanceVector));
+    libsvmwrite([bbFileName, '-flipped.train'], labelVector, sparse(instanceVector));
 end
