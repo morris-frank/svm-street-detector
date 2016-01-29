@@ -13,9 +13,9 @@ addpath(LIBSVM_PATH)
 
 %Iterate over video folders
 for FolderNumber = FolderNumbers
-    FolderPath = strcat(DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber));
+    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
 
-    frames = dir(strcat(FolderPath, '/*jpg'));
+    frames = dir([FolderPath, '/*jpg']);
 
     %Iterate over frames in video
     for f = 1:length(frames)
