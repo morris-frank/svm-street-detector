@@ -1,4 +1,4 @@
-function MODEL=TrainFromSVMFile(trainFile)
+function MODEL = TrainFromSVMFile(trainFile)
 
 HeaderConfig
 global LIBSVM_PATH LLC LLTYPE LLE
