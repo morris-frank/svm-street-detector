@@ -1,4 +1,4 @@
-function PredictFrame(FolderName, f, Model, permut, modus)
+function [HeatMapPositiv, HeatMapNegativ] =  PredictFrame(FolderName, f, Model, permut, modus)
 %Classify the contents of a Frame with given Model
 %PredictFrame(FolderName, FrameID, Model)
 
@@ -12,7 +12,7 @@ if nargin < 4
     end
 end
 
-if ~strcmp(modus, 'pos') and ~strcmp(modus, 'neg') and ~strcmp(modus, 'both')
+if ~strcmp(modus, 'pos') && ~strcmp(modus, 'neg') && ~strcmp(modus, 'both')
     error('The modus has to be pos, neg or both.')
 end
 if strcmp(modus, 'pos'); modus = 1; end
@@ -33,29 +33,33 @@ HOGCellSize = HOGCELLSIZE;
 CountOfHOG = COUNTOFHOG;
 %Width of a normalized Bounding Box in real pixels
 BBWidth = CountOfHOG * HOGCellSize;
+%The range of sliding window sizes
+SlideSizeRange = 40:10:100;
 
 %Load the image to paint on
-im = im2single(rgb2gray(imread([FolderPath, '/I', sprintf('%05d', f), '.jpg'])));
+im = im2single(rgb2gray(imread( ...
+    [FolderPath, '/I', sprintf('%05d', f), '.jpg'] ...
+)));
 
 %The size of the image
 [im_y, im_x] = size(im);
 
 %The HeatMaps we will use later to draw the results
 if modus == 1 || modus == 2
-    HeatMapPositiv = zeros(im_y, im_x);
+    HeatMapPositiv = zeros(im_y, im_x, 'single');
 end
 if modus == 0 || modus == 2
-    HeatMapNegativ = zeros(im_y, im_x);
+    HeatMapNegativ = zeros(im_y, im_x, 'single');
 end
 
 
-for SlideSize = 40 : 10 : 100
+for SlideSize = SlideSizeRange
 
     %With & Height of the sliding window used
     %SlideSize = 51;
     
     %Amount of pixels the window is moved in every step
-    SliderStep = floor(SlideSize);
+    SliderStep = floor(SlideSize/2);
     
     assert(SliderStep <= SlideSize)
     
@@ -75,8 +79,8 @@ for SlideSize = 40 : 10 : 100
     %First: Get prediction for the labels of a sliding window
     %--------------------------------------------------------
     
-    instanceVector = double(zeros(NumberOfSlides, 256 + CountOfHOG^2*(numOrient*3+4)));
-    labelVector = double(zeros(NumberOfSlides, 1));
+    instanceVector = zeros(NumberOfSlides, 256 + CountOfHOG^2*(numOrient*3+4), 'double');
+    labelVector = zeros(NumberOfSlides, 1, 'double');
     
     %The index of the instance in the instanceVector
     it = 1;
@@ -172,31 +176,18 @@ for SlideSize = 40 : 10 : 100
     end
 end
 
+
+
+
 if modus == 0 || modus == 2
-    %Normalize the HeatMaps
     HeatMapNegativ = HeatMapNegativ / max(HeatMapNegativ(:));
-    
-    Red = cat(3, ones(size(im)), zeros(size(im)), zeros(size(im)));
-    
-    %Make a new figure for the negativ HeatMap
-    imshow(im, 'InitialMag', 'fit')
-    hold on
-    hn = imshow(Red);
-    hold off
-    set(hn, 'AlphaData', HeatMapNegativ)
+    showHeatMap(im, HeatMapNegativ, 'red');
 end
 
 if modus == 1 || modus == 2
-    %Make a new figure for the positiv HeatMap
     HeatMapPositiv = HeatMapPositiv / max(HeatMapPositiv(:));
-    
-    Green = cat(3, zeros(size(im)), ones(size(im)), zeros(size(im)));
-    
-    imshow(im, 'InitialMag', 'fit')
-    hold on
-    hp = imshow(Green);
-    hold off
-    set(hp, 'AlphaData', HeatMapPositiv)
+    showHeatMap(im, HeatMapPositiv, 'green')
 end
+
 
 end

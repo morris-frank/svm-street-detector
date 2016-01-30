@@ -31,5 +31,4 @@ for file = dir(FolderPath)'
     figure('Name', [SNames{1}], 'WindowStyle', 'docked', 'NumberTitle', 'Off');
 	PredictFrame(FolderName, f, Model, permut, modus)
 
-	pause
 end

@@ -41,8 +41,8 @@ nBB = size(BBMat, 1);
 %Assume that we start with the first picture
 startBB = 1;
 
-labelVector = double(zeros(nBB, 1));
-instanceVector = double(zeros(nBB, 256 + CountOfHOG^2 * (3*numOrient+4)));
+labelVector = zeros(nBB, 1, 'double');
+instanceVector = zeros(nBB, 256 + CountOfHOG^2 * (3*numOrient+4), 'double');
 
 %Load first Image
 im = im2single(rgb2gray(imread(...
