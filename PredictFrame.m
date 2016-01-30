@@ -1,4 +1,4 @@
-function [HeatMap, im] =  PredictFrame(FolderName, f, Model, permut, modus)
+function [HeatMap, im] =  PredictFrame(FramePath, Model, permut, modus)
 %Classify the contents of a Frame with given Model
 %PredictFrame(FolderName, FrameID, Model)
 
@@ -20,9 +20,7 @@ if strcmp(modus, 'neg'); modus = 0; end
 
 addpath(LIBSVM_PATH)
 
-FolderPath = [DATAFOLDER, FolderName];
-
-assert(exist(FolderPath, 'dir') == 7)
+assert(exist(FramePath, 'file') == 2)
 
 %Number of Orientations in a HOG Cell
 numOrient = 9;
@@ -33,12 +31,10 @@ CountOfHOG = COUNTOFHOG;
 %Width of a normalized Bounding Box in real pixels
 BBWidth = CountOfHOG * HOGCellSize;
 %The range of sliding window sizes
-SlideSizeRange = 40:10:100;
+SlideSizeRange = 50:10:70;
 
 %Load the image to paint on
-im = im2single(rgb2gray(imread( ...
-    [FolderPath, '/I', sprintf('%05d', f), '.jpg'] ...
-)));
+im = im2single(rgb2gray(imread(FramePath)));
 
 %The size of the image
 [im_y, im_x] = size(im);
@@ -48,8 +44,10 @@ HeatMap = zeros(im_y, im_x, 'single');
 
 for SlideSize = SlideSizeRange
 
-    %With & Height of the sliding window used
-    %SlideSize = 51;
+    %Compute the contributions for the resize call,
+    %as the SlideSize doesn't change in the inner for loop the weights and indices
+    %are the same and should only be computed on time, what we are doing here...
+    [resizeWeights, resizeIndices] = fast_imresize_contributions(SlideSize, BBWidth, 4, true);
     
     %Amount of pixels the window is moved in every step
     SliderStep = floor(SlideSize/2);
@@ -92,7 +90,8 @@ for SlideSize = SlideSizeRange
     
             %Resize window to right size of needed
             if BBWidth ~= SlideSize
-                impart = imresize(impart, [BBWidth BBWidth], 'bilinear');
+                impart = imresizemex(impart, resizeWeights, resizeIndices, 1);
+                impart = imresizemex(impart, resizeWeights, resizeIndices, 2);
             end
     
             %Compute the HOG features
@@ -166,14 +165,5 @@ for SlideSize = SlideSizeRange
 end
 
 HeatMap = HeatMap / max(HeatMap(:));
-
-if modus == 0
-    showHeatMap(im, HeatMap, 'red');
-end
-
-if modus == 1
-    showHeatMap(im, HeatMap, 'green')
-end
-
 
 end
