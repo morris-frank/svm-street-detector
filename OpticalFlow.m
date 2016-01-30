@@ -36,11 +36,15 @@ for FolderNumber = FolderNumbers
 
         %Read images, make them gray doubles and resize with given
         %scalingFactor
-        im1 = im2double(imread([FolderPath, '/', firstframe.('name')]));
-        im2 = im2double(imread([FolderPath, '/', secframe.('name')]));
+        im1 = rgb2gray(im2single(imread( ...
+            [FolderPath, '/', firstframe.('name')] ...
+        )));
+        im2 = rgb2gray(im2single(imread( ...
+            [FolderPath, '/', secframe.('name')] ...
+        )));
 
-        im1 = rgb2gray(imresize(im1, scalingFactor, 'bicubic'));
-        im2 = rgb2gray(imresize(im2, scalingFactor, 'bicubic'));
+        im1 = imresize(im1, scalingFactor, 'bicubic');
+        im2 = imresize(im2, scalingFactor, 'bicubic');
 
         %Calculate optical flow with the lucaskanade script
         [flow_x, flow_y] = LucasKanade(im1, im2, windowSize);

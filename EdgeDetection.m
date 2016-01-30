@@ -23,9 +23,9 @@ for FolderNumber = FolderNumbers
 
         %Read image, make them gray doubles
         %and put into gpuarray
-        Im = rgb2gray( imread( ...
+        Im = im2single(rgb2gray(imread( ...
                                     [FolderPath, '/', frame.('name')] ...
-                     ));
+                     )));
 
         %Calculate canny and prewitt pictures:
         %canny = edge(gpuIm, 'canny', 3)
