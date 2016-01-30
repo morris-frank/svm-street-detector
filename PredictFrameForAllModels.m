@@ -9,9 +9,11 @@ if nargin < 4
     end
 end
 
-if ~strcmp(modus, 'pos') or ~strcmp(modus, 'neg') or ~strcmp(modus, 'both')
-    error('The modus has to be pos, neg or both.')
+if strcmp(modus, 'pos') == 0 && strcmp(modus, 'neg') == 0
+    error('The modus has to be pos, neg.')
 end
+if strcmp(modus, 'pos'); modus = 1; end
+if strcmp(modus, 'neg'); modus = 0; end
 
 for file = dir(FolderPath)'
 

@@ -1,4 +1,4 @@
-function [HeatMapPositiv, HeatMapNegativ] =  PredictFrame(FolderName, f, Model, permut, modus)
+function [HeatMap, im] =  PredictFrame(FolderName, f, Model, permut, modus)
 %Classify the contents of a Frame with given Model
 %PredictFrame(FolderName, FrameID, Model)
 
@@ -12,12 +12,11 @@ if nargin < 4
     end
 end
 
-if ~strcmp(modus, 'pos') && ~strcmp(modus, 'neg') && ~strcmp(modus, 'both')
-    error('The modus has to be pos, neg or both.')
+if strcmp(modus, 'pos') == 0 && strcmp(modus, 'neg') == 0
+    error('The modus has to be pos, neg.')
 end
 if strcmp(modus, 'pos'); modus = 1; end
 if strcmp(modus, 'neg'); modus = 0; end
-if strcmp(modus, 'both'); modus = 2; end
 
 addpath(LIBSVM_PATH)
 
@@ -45,13 +44,7 @@ im = im2single(rgb2gray(imread( ...
 [im_y, im_x] = size(im);
 
 %The HeatMaps we will use later to draw the results
-if modus == 1 || modus == 2
-    HeatMapPositiv = zeros(im_y, im_x, 'single');
-end
-if modus == 0 || modus == 2
-    HeatMapNegativ = zeros(im_y, im_x, 'single');
-end
-
+HeatMap = zeros(im_y, im_x, 'single');
 
 for SlideSize = SlideSizeRange
 
@@ -99,7 +92,7 @@ for SlideSize = SlideSizeRange
     
             %Resize window to right size of needed
             if BBWidth ~= SlideSize
-                impart = imresize(impart, [BBWidth BBWidth]);
+                impart = imresize(impart, [BBWidth BBWidth], 'bilinear');
             end
     
             %Compute the HOG features
@@ -155,18 +148,14 @@ for SlideSize = SlideSizeRange
     
             %The Model predicted a negativ label, so we increase the Negativ Heat Map
             %for that area
-            if modus == 0 || modus == 2
-                if labelVector(it) == 0
-                    HeatMapNegativ(Y, X) = HeatMapNegativ(Y, X) + 1;
-                end
+            if modus == 0 && labelVector(it) == 0
+                HeatMap(Y, X) = HeatMap(Y, X) + 1;
             end
     
             %The Model predicted a positiv label, so we increase the Positiv Heat Map
             %for that area
-            if modus == 1 || modus == 2
-                if labelVector(it) == 1
-                    HeatMapPositiv(Y, X) = HeatMapPositiv(Y, X) + 1;
-                end
+            if modus == 1 && labelVector(it) == 1
+                HeatMap(Y, X) = HeatMap(Y, X) + 1;
             end
     
             %increment the index for the next instance
@@ -176,17 +165,14 @@ for SlideSize = SlideSizeRange
     end
 end
 
+HeatMap = HeatMap / max(HeatMap(:));
 
-
-
-if modus == 0 || modus == 2
-    HeatMapNegativ = HeatMapNegativ / max(HeatMapNegativ(:));
-    showHeatMap(im, HeatMapNegativ, 'red');
+if modus == 0
+    showHeatMap(im, HeatMap, 'red');
 end
 
-if modus == 1 || modus == 2
-    HeatMapPositiv = HeatMapPositiv / max(HeatMapPositiv(:));
-    showHeatMap(im, HeatMapPositiv, 'green')
+if modus == 1
+    showHeatMap(im, HeatMap, 'green')
 end
 
 

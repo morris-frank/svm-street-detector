@@ -1,30 +1,34 @@
-function MorphPrediction(image, HeatMapPositiv)
+function MorphPrediction(image, HeatMap)
 
 %Threshold image to get a binary
-posBw = im2bw(HeatMapPositiv, 0.35);
+BinaryHeatMap = im2bw(HeatMap, 0.35);
 
 %Calculate the edges
 canny = edge(image, 'canny', [0.03, 0.085]);
 
 %Thicken the detected edges
-canny = bwmorph(canny, 'thicken', 2);
+canny = bwmorph(canny, 'thicken', 7);
 
-%invert the edges
+%Invert the Edges
 canny = imcomplement(canny);
 
-posBw = logical(canny .* posBw);
+%Removes the detected edges from the binary heatmap
+BinaryHeatMap = logical(canny .* BinaryHeatMap);
 
-se = strel('disk',1);
+clear canny
 
-posBw = imopen(posBw, se);
+%Wider holes in the reults so  noise can be cutted out
+BinaryHeatMap = imopen(BinaryHeatMap, strel('disk', 1));
 
-posBw = bwselect(posBw, [100 850], [450 450], 4);
+%Select the part of the results is in front of the car
+BinaryHeatMap = bwselect(BinaryHeatMap, [100 640], [450 450], 4);
 
-se = strel('disk',10);
+%One result-body remains and that we want to as compact as possible
+%so we fill remaining holes
+BinaryHeatMap = imclose(BinaryHeatMap, strel('disk', 7));
 
-posBw = imclose(posBw, se);
+HeatMap = HeatMap .* BinaryHeatMap;
 
-showHeatMap(image, posBw, 'green')
-%imshow(posBw)
+showHeatMap(image, HeatMap, 'green')
 
 end
