@@ -17,6 +17,12 @@ global LLTYPE LLC LLE
 LLTYPE = 2;
 LLC = 1e2;
 
+%Options for TreeBagger
+global TBSIZE TBNUMPREDS
+TBSIZE = 20;
+TBNUMPREDS = 'all'
+
+
 
 
 end

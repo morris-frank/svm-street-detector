@@ -1,4 +1,4 @@
-function [HeatMap, im] =  PredictFrame(FramePath, Model, permut, modus)
+function [HeatMap, im] =  PredictFrame(FramePath, Model, permut, modus, method)
 %Classify the contents of a Frame with given Model
 %PredictFrame(FolderName, FrameID, Model)
 
@@ -9,16 +9,27 @@ if nargin < 4
     permut = 0;
     if nargin < 5
         modus = 'pos';
+        if nargin < 6
+            method = 'liblinear';
+        end
     end
 end
 
 if strcmp(modus, 'pos') == 0 && strcmp(modus, 'neg') == 0
     error('The modus has to be pos, neg.')
 end
-if strcmp(modus, 'pos'); modus = 1; end
-if strcmp(modus, 'neg'); modus = 0; end
+if strcmp(modus, 'pos'); modusID = 1; end
+if strcmp(modus, 'neg'); modusID = 0; end
 
-addpath(LIBSVM_PATH)
+if strcmp(method, 'liblinear') == 0 && strcmp(method, 'treebagger') == 0
+    error('The method has to be liblinear, treebagger.')
+end
+if strcmp(method, 'liblinear')
+    addpath(LIBSVM_PATH)
+    methodID = 1;
+end
+if strcmp(method, 'treebagger'); methodID = 0; end
+
 
 assert(exist(FramePath, 'file') == 2)
 
@@ -122,17 +133,26 @@ for SlideSize = SlideSizeRange
         end
     end
     
-    %Make the instanceVector sparse, as liblinear requires just that
-    instanceVector = sparse(instanceVector);
-    
-    %Predict the labels for all the instances
-    [labelVector] = predict(labelVector, instanceVector, Model);
+
+    %First case: We use the liblinear to predict
+    if methodID == 1
+        %Make the instanceVector sparse, as liblinear requires just that
+        instanceVector = sparse(instanceVector);
+        
+        %Predict the labels for all the instances
+        [labelVector] = predict(labelVector, instanceVector, Model);
+    end
+
+    %Second case: We use the TreeBagger to predict
+    if methodID == 0
+        %Predict the labels for all the instances
+        [labelVector] = Model.predict(instanceVector);
+    end
     clear instanceVector
     
     %------------------------------------------------
     %Second: Add the predicted labels to the HeatMaps
     %------------------------------------------------
-    
     %reset the instance index
     it = 1;
     
@@ -144,16 +164,23 @@ for SlideSize = SlideSizeRange
             Y = y : y+SlideSize-1;
             %The x-values of the sliding window
             X = x : x+SlideSize-1;
+
+            if methodID == 1
+                label = labelVector(it);
+            end
+            if methodID == 0
+                label = str2double(labelVector(it));
+            end
     
             %The Model predicted a negativ label, so we increase the Negativ Heat Map
             %for that area
-            if modus == 0 && labelVector(it) == 0
+            if modusID == 0 && label == 0
                 HeatMap(Y, X) = HeatMap(Y, X) + 1;
             end
     
             %The Model predicted a positiv label, so we increase the Positiv Heat Map
             %for that area
-            if modus == 1 && labelVector(it) == 1
+            if modusID == 1 && label == 1
                 HeatMap(Y, X) = HeatMap(Y, X) + 1;
             end
     
