@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function [weights, indices] = fast_imresize_contributions(in_length, out_length, kernel_width, antialiasing)
 
 scale = out_length / in_length;

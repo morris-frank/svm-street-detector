@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function EdgeDetection(FolderNumbers)
 
 assert(min(FolderNumbers) >= 0)

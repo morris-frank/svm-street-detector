@@ -1,16 +1,17 @@
-function [HeatMap, im] =  PredictFrame(FramePath, Model, permut, modus, method)
+% See the file 'LICENSE' for the full license governing this code.
+function [HeatMap, im] =  PredictFrame(FramePath, Model, method, modus, permut)
 %Classify the contents of a Frame with given Model
 %PredictFrame(FolderName, FrameID, Model)
 
 HeaderConfig
 global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER HOGCELLSIZE COUNTOFHOG
 
-if nargin < 4
-    permut = 0;
-    if nargin < 5
+if nargin < 3
+    method = 'liblinear';
+    if nargin < 4
         modus = 'pos';
-        if nargin < 6
-            method = 'liblinear';
+        if nargin < 5
+            permut = 0;
         end
     end
 end
@@ -138,7 +139,7 @@ for SlideSize = SlideSizeRange
     if methodID == 1
         %Make the instanceVector sparse, as liblinear requires just that
         instanceVector = sparse(instanceVector);
-        
+        disp(['Prediciton for ' num2str(SlideSize)])
         %Predict the labels for all the instances
         [labelVector] = predict(labelVector, instanceVector, Model);
     end

@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function featureMat = scaleFeatureMat(featureMat, newSize)
 
 assert(ndims(featureMat) == 3);

@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function HOGData(FolderNumbers, wHOGCell)
 
 if nargin < 2

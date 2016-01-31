@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function ProcessBBFile(bbFileName, FolderName, permut)
 % Converts the BoundingBoxes on a *.bb file to SVM train data
 % ProcessBBFile(bbFileName, FolderName)

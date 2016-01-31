@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function [u, v] = LucasKanade(im1, im2, windowSize);
 %LucasKanade  lucas kanade algorithm, without pyramids (only 1 level);
 

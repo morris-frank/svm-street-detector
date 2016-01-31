@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function PredictVideo(FolderNumbers, Model, StartFrames)
 
 assert(min(FolderNumbers) >= 0)

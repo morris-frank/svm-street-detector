@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function PredictFrameForAllModels(FolderPath, FolderName, f, permut, modus)
 %Classify the contents of a Frame for all Models in the current dir
 %PredictFrameForAllModels(FolderName, FrameID)

@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function HeaderConfig()
 
 global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER
@@ -19,8 +20,8 @@ LLC = 1e2;
 
 %Options for TreeBagger
 global TBSIZE TBNUMPREDS
-TBSIZE = 20;
-TBNUMPREDS = 'all'
+TBSIZE = 30;
+TBNUMPREDS = 'all';
 
 
 

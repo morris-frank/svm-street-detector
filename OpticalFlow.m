@@ -1,3 +1,4 @@
+% See the file 'LICENSE' for the full license governing this code.
 function OpticalFlow(FolderNumbers, windowSize, scalingFactor)
 
 if nargin < 3
