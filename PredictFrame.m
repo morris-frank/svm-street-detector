@@ -6,12 +6,12 @@ function [HeatMap, im] =  PredictFrame(FramePath, Model, method, modus, permut)
 HeaderConfig
 global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER HOGCELLSIZE COUNTOFHOG
 
-if nargin < 3
-    method = 'liblinear';
-    if nargin < 4
-        modus = 'pos';
-        if nargin < 5
-            permut = 0;
+if nargin < 5
+    permut = 0;
+        if nargin < 4
+            modus = 'pos';
+            if nargin < 3
+                method = 'liblinear';
         end
     end
 end
@@ -46,7 +46,7 @@ BBWidth = CountOfHOG * HOGCellSize;
 SlideSizeRange = 50:10:70;
 
 %Load the image to paint on
-im = im2single(rgb2gray(imread(FramePath)));
+im = im2single(rgb2gray(rjpg8c(FramePath)));
 
 %The size of the image
 [im_y, im_x] = size(im);
@@ -139,7 +139,6 @@ for SlideSize = SlideSizeRange
     if methodID == 1
         %Make the instanceVector sparse, as liblinear requires just that
         instanceVector = sparse(instanceVector);
-        disp(['Prediciton for ' num2str(SlideSize)])
         %Predict the labels for all the instances
         [labelVector] = predict(labelVector, instanceVector, Model);
     end

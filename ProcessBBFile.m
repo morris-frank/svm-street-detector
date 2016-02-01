@@ -18,6 +18,10 @@ bbFilePath = [DATAFOLDER, bbFileName];
 assert(exist(FolderPath, 'dir') == 7)
 assert(exist(bbFilePath, 'file') == 2)
 
+%if exist(rjpg8c) ~= 3
+%    error('You need the rjpg8c MEX-File on your searchpath.')
+%end
+
 %Number of Orientations in a HOG Cell
 numOrient = 9;
 %Width of a HOG Cell
@@ -46,7 +50,7 @@ labelVector = zeros(nBB, 1, 'double');
 instanceVector = zeros(nBB, 256 + CountOfHOG^2 * (3*numOrient+4), 'double');
 
 %Load first Image
-im = im2single(rgb2gray(imread(...
+im = im2single(rgb2gray(rjpg8c(...
     [FolderPath, '/I', sprintf('%05d', BBMat(1, 1)), '.jpg']...
 )));
 oldFrameID = BBMat(1, 1);
@@ -54,12 +58,14 @@ oldFrameID = BBMat(1, 1);
 %The size of the images, assuming it will not change
 [im_y, im_x] = size(im);
 
+h = waitbar(0, ['Processing ' bbFileName '...']);
+
 %Iterate over the Bounding Boxes
 for b = startBB:nBB
-
+    waitbar((b-startBB)/nBB)
     %If the Bounding Box is on a different picture, load it
     if BBMat(b, 1) ~= oldFrameID
-        im = im2single(rgb2gray(imread(...
+        im = im2single(rgb2gray(rjpg8c(...
             [FolderPath, '/I', sprintf('%05d', BBMat(b, 1)), '.jpg']...
         )));
         oldFrameID = BBMat(b, 1);
@@ -104,6 +110,8 @@ for b = startBB:nBB
     labelVector(b) = BBMat(b, 2);
 
 end
+
+close(h)
 
 if permut == 0
     libsvmwrite([bbFileName, '.train'], labelVector, sparse(instanceVector));

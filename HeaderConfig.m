@@ -19,9 +19,8 @@ LLTYPE = 2;
 LLC = 1e2;
 
 %Options for TreeBagger
-global TBSIZE TBNUMPREDS
+global TBSIZE
 TBSIZE = 30;
-TBNUMPREDS = 'all';
 
 
 
