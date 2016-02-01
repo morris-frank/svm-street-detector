@@ -58,7 +58,7 @@ oldFrameID = BBMat(1, 1);
 %The size of the images, assuming it will not change
 [im_y, im_x] = size(im);
 
-%h = waitbar(0, ['Processing ' bbFileName '...']);
+%bar = waitbar(0, ['Processing ' bbFileName '...']);
 
 %Iterate over the Bounding Boxes
 for b = startBB:nBB
@@ -120,7 +120,7 @@ for b = startBB:nBB
 
 end
 
-%close(h)
+%close(bar)
 
 if permut == 0
     libsvmwrite([bbFileName, '.train'], labelVector, sparse(instanceVector));

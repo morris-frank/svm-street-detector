@@ -17,21 +17,31 @@ end
 
 HeaderConfig
 global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER
+FolderNameAdd = '_prediction/';
 addpath(LIBSVM_PATH)
 
 %Iterate over video folders
 for FolderNumber = FolderNumbers
     FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
 
+    mkdir([FolderPath FolderNameAdd]);
+
     frames = dir([FolderPath, '/*jpg']);
+    StartFrame = StartFrames(find(FolderNumbers==FolderNumber));
+
+    bar = waitbar(0, ['Processing ' FolderPath '...']);
 
     %Iterate over frames in video
-    for f = StartFrames(find(FolderNumbers==FolderNumber)):length(frames)
+    for f = StartFrame:length(frames)
+        waitbar((f-StartFrame)/length(frames))
     	FramePath = [FolderPath, '/I', sprintf('%05d', f), '.jpg'];
         [HeatMap, im] = PredictFrame(FramePath, Model, method);
         overlayHeatMap(MorphPrediction(HeatMap, im), im, 'green')
-        pause
+
+        saveOverLay(MorphPrediction(HeatMap, im), im, [FolderPath FolderNameAdd '/I' sprintf('%05d', f) '.png'])
     end
+
+    close(bar)
 end
 
 end
