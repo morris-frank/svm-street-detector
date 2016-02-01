@@ -17,20 +17,20 @@ modelName = matlab.lang.makeValidName([trainFileName, '_', method]);
 
 [labelVector, instanceVector] = libsvmread(trainFile); %#ok<*ASGLU>
 
-switch method
-	%--------------------------------------------------------
-	%First case: We use the liblinear to train
-	%--------------------------------------------------------    
-	case 'liblinear'
-		LibLinearParams = ['-s ', num2str(LLTYPE), ' -c ', num2str(LLC, 3)]; %#ok<*NASGU>
-		eval([modelName ' = train(labelVector, instanceVector, ' LibLinearParams ');']);
+%--------------------------------------------------------
+%First case: We use the liblinear to train
+%--------------------------------------------------------    
+if methodID == 1
+	LibLinearParams = ['-s ', num2str(LLTYPE), ' -c ', num2str(LLC, 3)]; %#ok<*NASGU>
+	eval([modelName ' = train(labelVector, instanceVector, ' LibLinearParams ');']);
+end
 
-	%--------------------------------------------------------
-	%Second case: We use the TreeBagger to train
-	%--------------------------------------------------------    
-	case 'treebagger'
-		instanceVector = full(instanceVector);
-	    NumPreds = num2str(floor(sqrt(size(instanceVector(1,:), 2))));
+%--------------------------------------------------------
+%Second case: We use the TreeBagger to train
+%--------------------------------------------------------    
+if methodID == 0
+	instanceVector = full(instanceVector);
+    NumPreds = num2str(floor(sqrt(size(instanceVector(1,:), 2))));
 		TreeBaggerParams = ['''NumPrint'', 10, ''NumPredictorsToSample'', ' NumPreds];
 		eval([modelName ' = TreeBagger(TBSIZE, instanceVector, labelVector, ''Method'', ''classification'', ' TreeBaggerParams ');']);
 end
