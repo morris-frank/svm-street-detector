@@ -14,13 +14,10 @@ if strcmp(color, 'blue')
 end
 
 warning('off', 'images:imshow:magnificationMustBeFitForDockedFigure')
-f = figure('Visible', 'off');
-a = axes('Visible','off');
-imagesc(im), colormap(gray), axis off;
+imshow(im); colormap(gray), axis off;
 hold on
-hn = imagesc(colorMap), axis off;
+hn = imshow(colorMap); axis off;
 hold off
 set(hn, 'AlphaData', HeatMap)
-print('MySavedPlot','-dpng', '-noui')
 
 end

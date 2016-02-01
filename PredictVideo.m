@@ -2,7 +2,7 @@
 function PredictVideo(FolderNumbers, Model, method, StartFrames)
 
 if nargin < 4
-    StartFrames = 1
+    StartFrames = 1;
 end
 
 assert(min(FolderNumbers) >= 0)
@@ -32,13 +32,11 @@ for FolderNumber = FolderNumbers
     bar = waitbar(0, ['Processing ' FolderPath '...']);
 
     %Iterate over frames in video
-    for f = StartFrame:length(frames)
+    parfor f = StartFrame:length(frames)
         waitbar((f-StartFrame)/length(frames))
     	FramePath = [FolderPath, '/I', sprintf('%05d', f), '.jpg'];
         [HeatMap, im] = PredictFrame(FramePath, Model, method);
-        overlayHeatMap(MorphPrediction(HeatMap, im), im, 'green')
-
-        saveOverLay(MorphPrediction(HeatMap, im), im, [FolderPath FolderNameAdd '/I' sprintf('%05d', f) '.png'])
+        saveOverlay(MorphPrediction(HeatMap, im), im, [FolderPath FolderNameAdd '/I' sprintf('%05d', f) '.png'])
     end
 
     close(bar)
