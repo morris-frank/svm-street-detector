@@ -1,5 +1,9 @@
 % See the file 'LICENSE' for the full license governing this code.
-function PredictVideo(FolderNumbers, Model, StartFrames)
+function PredictVideo(FolderNumbers, Model, method, StartFrames)
+
+if nargin < 4
+    StartFrames = 1
+end
 
 assert(min(FolderNumbers) >= 0)
 
@@ -24,7 +28,7 @@ for FolderNumber = FolderNumbers
     %Iterate over frames in video
     for f = StartFrames(find(FolderNumbers==FolderNumber)):length(frames)
     	FramePath = [FolderPath, '/I', sprintf('%05d', f), '.jpg'];
-        [HeatMap, im] = PredictFrame(FramePath, Model);
+        [HeatMap, im] = PredictFrame(FramePath, Model, method);
         overlayHeatMap(MorphPrediction(HeatMap, im), im, 'green')
         pause
     end

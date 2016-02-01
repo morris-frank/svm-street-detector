@@ -135,18 +135,18 @@ for SlideSize = SlideSizeRange
     end
     
 
-    %First case: We use the liblinear to predict
-    if methodID == 1
-        %Make the instanceVector sparse, as liblinear requires just that
-        instanceVector = sparse(instanceVector);
-        %Predict the labels for all the instances
-        [labelVector] = predict(labelVector, instanceVector, Model);
-    end
-
-    %Second case: We use the TreeBagger to predict
-    if methodID == 0
-        %Predict the labels for all the instances
-        [labelVector] = Model.predict(instanceVector);
+    switch methodID
+        %First case: We use the liblinear to predict
+        case 1
+            %Make the instanceVector sparse, as liblinear requires just that
+            instanceVector = sparse(instanceVector);
+            %Predict the labels for all the instances
+            [labelVector] = predict(labelVector, instanceVector, Model);
+    
+        %Second case: We use the TreeBagger to predict
+        case 0
+            %Predict the labels for all the instances
+            [labelVector] = Model.predict(instanceVector);
     end
     clear instanceVector
     
@@ -165,22 +165,17 @@ for SlideSize = SlideSizeRange
             %The x-values of the sliding window
             X = x : x+SlideSize-1;
 
-            if methodID == 1
-                label = labelVector(it);
-            end
-            if methodID == 0
-                label = str2double(labelVector(it));
-            end
-    
-            %The Model predicted a negativ label, so we increase the Negativ Heat Map
-            %for that area
-            if modusID == 0 && label == 0
-                HeatMap(Y, X) = HeatMap(Y, X) + 1;
+            %Treebagger returns the label as a string so in this case we convert it to a number
+            switch methodID
+                case 1
+                    label = labelVector(it);
+                case 0
+                    label = str2double(labelVector(it));
             end
     
-            %The Model predicted a positiv label, so we increase the Positiv Heat Map
-            %for that area
-            if modusID == 1 && label == 1
+            %If we want the positiv HeatMap modusID is 1 and label has to be 1
+            %if we want the negativ one modusID is 0 and label has to be 0
+            if modusID == label
                 HeatMap(Y, X) = HeatMap(Y, X) + 1;
             end
     

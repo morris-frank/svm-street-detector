@@ -58,11 +58,11 @@ oldFrameID = BBMat(1, 1);
 %The size of the images, assuming it will not change
 [im_y, im_x] = size(im);
 
-h = waitbar(0, ['Processing ' bbFileName '...']);
+%h = waitbar(0, ['Processing ' bbFileName '...']);
 
 %Iterate over the Bounding Boxes
 for b = startBB:nBB
-    waitbar((b-startBB)/nBB)
+    %waitbar((b-startBB)/nBB)
     %If the Bounding Box is on a different picture, load it
     if BBMat(b, 1) ~= oldFrameID
         im = im2single(rgb2gray(rjpg8c(...
@@ -86,7 +86,16 @@ for b = startBB:nBB
     X = x - HalfBBWidth : x + HalfBBWidth;
 
     %Get the part of the image for the Bounding Box
-    impart = im(Y, X);
+    try
+        impart = im(Y, X);
+    catch ME
+        if (strcmp(ME.identifier,'MATLAB:badsubscript'))
+            warning(['impart subscipts were bad : y=' num2str(y) ' x=' num2str(x)] ' with HalfBBWidth=' num2str(HalfBBWidth))
+            continue
+        else
+            rethrow(ME)
+        end
+    end
 
     %Compute the HOG features for that part
     hog = vl_hog(impart, HOGCellSize);
@@ -111,7 +120,7 @@ for b = startBB:nBB
 
 end
 
-close(h)
+%close(h)
 
 if permut == 0
     libsvmwrite([bbFileName, '.train'], labelVector, sparse(instanceVector));
