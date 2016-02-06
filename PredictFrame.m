@@ -8,10 +8,10 @@ global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER HOGCELLSIZE COUNTOFHOG
 
 if nargin < 5
     permut = 0;
-        if nargin < 4
-            modus = 'pos';
-            if nargin < 3
-                method = 'liblinear';
+    if nargin < 4
+        modus = 'pos';
+        if nargin < 3
+            method = 'liblinear';
         end
     end
 end

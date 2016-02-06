@@ -17,7 +17,15 @@ end
 
 HeaderConfig
 global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER
-FolderNameAdd = '_prediction/';
+
+if strcmp(method, 'treebagger')
+    FolderNameAdd = '_prediction_treebagger';
+    FolderNameAddPre = '_prediction_treebagger_unmorphed';
+else
+    FolderNameAdd = '_prediction_liblinear';
+    FolderNameAddPre = '_prediction_liblinear_unmorphed';
+end
+  
 addpath(LIBSVM_PATH)
 
 %Iterate over video folders
@@ -25,21 +33,25 @@ for FolderNumber = FolderNumbers
     FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
 
     mkdir([FolderPath FolderNameAdd]);
+    mkdir([FolderPath FolderNameAddPre]);
 
     frames = dir([FolderPath, '/*jpg']);
     StartFrame = StartFrames(find(FolderNumbers==FolderNumber));
 
-    bar = waitbar(0, ['Processing ' FolderPath '...']);
-
     %Iterate over frames in video
-    parfor f = StartFrame:length(frames)
-        waitbar((f-StartFrame)/length(frames))
+    for f = StartFrame:length(frames)
     	FramePath = [FolderPath, '/I', sprintf('%05d', f), '.jpg'];
         [HeatMap, im] = PredictFrame(FramePath, Model, method);
+        
+        %Save the Heat Map
+        save([FolderPath FolderNameAddPre '/I' sprintf('%05d', f) '.mat'],'HeatMap');
+        
+        %Save the frame without Morphology applied
+        saveOverlay(HeatMap, im, [FolderPath FolderNameAddPre '/I' sprintf('%05d', f) '.png'])
+        
+        %Apply the Morphology and save the frame
         saveOverlay(MorphPrediction(HeatMap, im), im, [FolderPath FolderNameAdd '/I' sprintf('%05d', f) '.png'])
     end
-
-    close(bar)
 end
 
 end

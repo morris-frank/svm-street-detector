@@ -31,7 +31,7 @@ switch methodID
 	case 0
 		instanceVector = full(instanceVector);
 	    NumPreds = num2str(floor(sqrt(size(instanceVector(1,:), 2))));
-		TreeBaggerParams = ['''NumPrint'', 10, ''NumPredictorsToSample'', ' NumPreds];
+		TreeBaggerParams = ['''NumPrint'', 10'];
 		eval([modelName ' = TreeBagger(TBSIZE, instanceVector, labelVector, ''Method'', ''classification'', ' TreeBaggerParams ');']);
 end
 
