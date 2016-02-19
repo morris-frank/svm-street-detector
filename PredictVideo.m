@@ -37,21 +37,25 @@ for FolderNumber = FolderNumbers
 
     frames = dir([FolderPath, '/*jpg']);
     StartFrame = StartFrames(find(FolderNumbers==FolderNumber));
-
+    %parpool(2)
     %Iterate over frames in video
     for f = StartFrame:length(frames)
     	FramePath = [FolderPath, '/I', sprintf('%05d', f), '.jpg'];
         [HeatMap, im] = PredictFrame(FramePath, Model, method);
         
         %Save the Heat Map
-        save([FolderPath FolderNameAddPre '/I' sprintf('%05d', f) '.mat'],'HeatMap');
+        parsave([FolderPath FolderNameAddPre '/I' sprintf('%05d', f) '.mat'],'HeatMap');
         
         %Save the frame without Morphology applied
         saveOverlay(HeatMap, im, [FolderPath FolderNameAddPre '/I' sprintf('%05d', f) '.png'])
         
         %Apply the Morphology and save the frame
-        saveOverlay(MorphPrediction(HeatMap, im), im, [FolderPath FolderNameAdd '/I' sprintf('%05d', f) '.png'])
+        saveOverlay(MP2(HeatMap, im), im, [FolderPath FolderNameAdd '/I' sprintf('%05d', f) '.png'])
     end
 end
 
+end
+
+function parsave(filename, data) %#ok<INUSD>
+    save(filename, 'data')
 end

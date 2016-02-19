@@ -26,9 +26,9 @@ BinaryHeatMap = bwselect(BinaryHeatMap, [100 640], [450 450], 4);
 
 %One region remains and this we want to be as compact as possible
 %so we fill remaining holes
-BinaryHeatMap = imclose(BinaryHeatMap, strel('disk', 10));
+BinaryHeatMap = imclose(BinaryHeatMap, strel('disk', 3));
 BinaryHeatMap = imfill(BinaryHeatMap, 'holes');
 
-HeatMap = HeatMap .* BinaryHeatMap;
+HeatMap = BinaryHeatMap;
 
 end

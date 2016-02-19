@@ -6,4 +6,5 @@ green = HeatMap + (im .* (1-HeatMap));
 redNBlue = (im .* (1-HeatMap)) - HeatMap;
 
 imwrite(cat(3, redNBlue, green, redNBlue), savePath)
+%imshow(cat(3, redNBlue, green, redNBlue))
 end

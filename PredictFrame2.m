@@ -1,5 +1,5 @@
 % See the file 'LICENSE' for the full license governing this code.
-function [HeatMap, im] =  PredictFrame(FramePath, Model, method, modus, permut)
+function [HeatMap, im] =  PredictFrame2(FramePath, Model, method, modus, permut)
 %Classify the contents of a Frame with given Model
 %PredictFrame(FolderName, FrameID, Model)
 
@@ -43,7 +43,7 @@ CountOfHOG = COUNTOFHOG;
 %Width of a normalized Bounding Box in real pixels
 BBWidth = CountOfHOG * HOGCellSize;
 %The range of sliding window sizes
-SlideSizeRange = 50:10:70;
+SlideSizeRange = 40;
 %SlideSizeRange = 60;
 
 %Load the image to paint on
@@ -63,8 +63,8 @@ for SlideSize = SlideSizeRange
     [resizeWeights, resizeIndices] = fast_imresize_contributions(SlideSize, BBWidth, 4, true);
     
     %Amount of pixels the window is moved in every step
-    SliderStep = floor(SlideSize/2);
-    %SliderStep = 2;
+    %SliderStep = floor(SlideSize/2);
+    SliderStep = 2;
     
     assert(SliderStep <= SlideSize)
     
@@ -163,12 +163,12 @@ for SlideSize = SlideSizeRange
         for x = slide_left : SliderStep : im_x-SlideSize
     
             %The y-values of the sliding window
-            Y = y : y+SlideSize-1;
-            %Y = (2*y+SlideSize-1)/2;
+            %Y = y : y+SlideSize-1;
+            Y = (2*y+SlideSize-1)/2;
             Y = round(max(0, Y));
             %The x-values of the sliding window
-            X = x : x+SlideSize-1;
-            %X = (2*x+SlideSize-1)/2;
+            %X = x : x+SlideSize-1;
+            X = (2*x+SlideSize-1)/2;
             X = round(max(0, X));
 
             %Treebagger returns the label as a string so in this case we convert it to a number
