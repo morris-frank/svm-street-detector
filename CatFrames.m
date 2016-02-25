@@ -3,7 +3,7 @@ function CatFrames(FolderNumbers, modelname)
 HeaderConfig
 global FOLDERNAMEBASE DATAFOLDER
 
-for FolderNumber = FolderNumbers
+parfor FolderNumber = FolderNumbers
     SeqFolderName = [FOLDERNAMEBASE, sprintf('%04d', FolderNumber), '/'];
     PredictionDir = [DATAFOLDER, 'RESULTS/PREDICTIONS/', modelname, '/', SeqFolderName];
 

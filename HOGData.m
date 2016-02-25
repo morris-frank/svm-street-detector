@@ -12,7 +12,7 @@ HeaderConfig
 global FOLDERNAMEBASE DATAFOLDER
 
 %Iterate through video folders
-for FolderNumber = FolderNumbers
+parfor FolderNumber = FolderNumbers
     SeqFolderName = [FOLDERNAMEBASE, sprintf('%04d', FolderNumber), '/'];
     ComputationDir = [DATAFOLDER, 'RESULTS/', SeqFolderName];
 
