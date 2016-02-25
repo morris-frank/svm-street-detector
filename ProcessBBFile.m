@@ -12,8 +12,8 @@ end
 
 addpath(LIBSVM_PATH)
 
-FolderPath = [DATAFOLDER, FolderName];
-bbFilePath = [DATAFOLDER, bbFileName];
+FolderPath = [DATAFOLDER, 'DATA/', FolderName];
+bbFilePath = [DATAFOLDER, 'DATA/', bbFileName];
 
 assert(exist(FolderPath, 'dir') == 7)
 assert(exist(bbFilePath, 'file') == 2)
@@ -90,7 +90,7 @@ for b = startBB:nBB
         impart = im(Y, X);
     catch ME
         if (strcmp(ME.identifier,'MATLAB:badsubscript'))
-            warning(['impart subscipts were bad : y=' num2str(y) ' x=' num2str(x)] ' with HalfBBWidth=' num2str(HalfBBWidth))
+            warning(['impart subscipts were bad : y=' num2str(y) ' x=' num2str(x) ' with HalfBBWidth=' num2str(HalfBBWidth)])
             continue
         else
             rethrow(ME)
@@ -123,7 +123,7 @@ end
 %close(bar)
 
 if permut == 0
-    libsvmwrite([bbFileName, '.train'], labelVector, sparse(instanceVector));
+    libsvmwrite([DATAFOLDER, 'TRAIN/', bbFileName, '.train'], labelVector, sparse(instanceVector));
 else
-    libsvmwrite([bbFileName, '-flipped.train'], labelVector, sparse(instanceVector));
+    libsvmwrite([DATAFOLDER, 'TRAIN/', bbFileName, '-flipped.train'], labelVector, sparse(instanceVector));
 end

@@ -1,57 +1,46 @@
-function CatFrames(FolderNumbers, method)
+function CatFrames(FolderNumbers, modelname)
 
 HeaderConfig
 global FOLDERNAMEBASE DATAFOLDER
 
-if strcmp(method, 'treebagger')
-    SaveAdd = '_result_treebagger';
-    FolderNameAdd = '_prediction_treebagger';
-    FolderNameAddPre = '_prediction_treebagger_unmorphed';
-else
-    SaveAdd = '_result_liblinear';
-    FolderNameAdd = '_prediction_liblinear';
-    FolderNameAddPre = '_prediction_liblinear_unmorphed';
-end
-
 for FolderNumber = FolderNumbers
-    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
+    SeqFolderName = [FOLDERNAMEBASE, sprintf('%04d', FolderNumber), '/'];
+    PredictionDir = [DATAFOLDER, 'RESULTS/PREDICTIONS/', modelname, '/', SeqFolderName];
 
-    frames = dir([FolderPath, '/*jpg']);
-    
-    mkdir([FolderPath SaveAdd]);
+    mkdir([PredictionDir, 'result']);
 
     %Iterate over frames in video
-    parfor f = 1:length(frames)
+    parfor f = 1:length(dir([DATAFOLDER, 'DATA/', SeqFolderName, '/*jpg'])')
+        FrameFileName = ['I', sprintf('%05d', f)];
+
         %The frame from the video
-        NormalFramePath = [FolderPath, '/I', sprintf('%05d', f), '.jpg'];
-        
-        %The prediction for that frame with applied Morphology
-        PredFramePath = [FolderPath, FolderNameAddPre, '/I', sprintf('%05d', f), '.png'];
-        
+        FramePath = [DATAFOLDER, 'DATA/', SeqFolderName, FrameFileName, '.jpg'];
+
+        %The prediction for that frame without applied Morphology
+        PredFramePath = [PredictionDir, 'prediction/', FrameFileName, '.png'];
+
         %The HeatMap for that frame
-        PredMorphFramePath = [FolderPath, FolderNameAdd, '/I', sprintf('%05d', f), '.png'];
-        
+        PredMorphFramePath = [PredictionDir, 'morphed_prediction/', FrameFileName, '.png'];
+
         %The path for the result
-        SavePath = [FolderPath, SaveAdd, '/I', sprintf('%05d', f), '.png'];
-      
-        Normal = (rgb2gray(rjpg8c(NormalFramePath)));
+        SavePath = [PredictionDir, 'result/', FrameFileName, '.png'];
+
+        Normal = (rgb2gray(rjpg8c(FramePath)));
         Prediction = imread(PredFramePath);
         PredictionMorphed = imread(PredMorphFramePath);
-    
-        %Calculate the edges
-        Edges = edge(Normal, 'canny', [0.03, 0.085]);
 
-        %Thicken the detected edges
-        Edges = bwmorph(Edges, 'thicken', 7);
-        
+        %Detect the edges
+        Edges = edge(Image, 'canny', [0.01, 0.07]);
+        Edges = imclose(Edges, strel('disk', 5));
+
         %Make the Edges and the frame rgb pictures
         Edges = 255 * Edges;
         Edges = cat(3, Edges, Edges, Edges);
         Normal = cat(3, Normal, Normal, Normal);
-    
+
         %Cat the four pictures into a grid
         result = [Normal, Prediction; Edges, PredictionMorphed];
-    
+
         imwrite(result, SavePath)
     end
 end

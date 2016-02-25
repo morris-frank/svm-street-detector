@@ -5,11 +5,11 @@ HeaderConfig
 global LIBSVM_PATH LLC LLTYPE LLE TBSIZE
 addpath(LIBSVM_PATH)
 
-if strcmp(method, 'liblinear') == 0 && strcmp(method, 'treebagger') == 0
-    error('The method has to be liblinear, treebagger.')
+if strcmp(method, 'liblinear') == 0 && strcmp(method, 'randforest') == 0
+    error('The method has to be liblinear, randforest.')
 end
 if strcmp(method, 'liblinear'); methodID = 1; end
-if strcmp(method, 'treebagger'); methodID = 0; end
+if strcmp(method, 'randforest'); methodID = 0; end
 
 
 [~, trainFileName, ~] = fileparts(trainFile);
@@ -26,13 +26,13 @@ switch methodID
 		eval([modelName ' = train(labelVector, instanceVector, LibLinearParams);']);
 
 	%--------------------------------------------------------
-	%Second case: We use the TreeBagger to train
+	%Second case: We use the randforest to train
 	%--------------------------------------------------------    
 	case 0
 		instanceVector = full(instanceVector);
 	    NumPreds = num2str(floor(sqrt(size(instanceVector(1,:), 2))));
-		TreeBaggerParams = ['''NumPrint'', 10'];
-		eval([modelName ' = TreeBagger(TBSIZE, instanceVector, labelVector, ''Method'', ''classification'', ' TreeBaggerParams ');']);
+		randforestParams = ['''NumPrint'', 10'];
+		eval([modelName ' = randforest(TBSIZE, instanceVector, labelVector, ''Method'', ''classification'', ' randforestParams ');']);
 end
 
 eval(['save(''' modelName ''', ''' modelName ''')']);

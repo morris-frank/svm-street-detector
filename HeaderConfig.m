@@ -18,7 +18,7 @@ global LLTYPE LLC LLE
 LLTYPE = 2;
 LLC = 1e2;
 
-%Options for TreeBagger
+%Options for randforest
 global TBSIZE
 TBSIZE = 30;
 

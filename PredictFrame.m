@@ -4,14 +4,14 @@ function [HeatMap, im] =  PredictFrame(FramePath, Model, method, modus, permut)
 %PredictFrame(FolderName, FrameID, Model)
 
 HeaderConfig
-global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER HOGCELLSIZE COUNTOFHOG
+global LIBSVM_PATH HOGCELLSIZE COUNTOFHOG
 
 if nargin < 5
     permut = 0;
     if nargin < 4
         modus = 'pos';
         if nargin < 3
-            method = 'liblinear';
+            method = 'linear';
         end
     end
 end
@@ -22,14 +22,14 @@ end
 if strcmp(modus, 'pos'); modusID = 1; end
 if strcmp(modus, 'neg'); modusID = 0; end
 
-if strcmp(method, 'liblinear') == 0 && strcmp(method, 'treebagger') == 0
-    error('The method has to be liblinear, treebagger.')
+if strcmp(method, 'linear') == 0 && strcmp(method, 'randforest') == 0
+    error('The method has to be linear, randforest.')
 end
-if strcmp(method, 'liblinear')
+if strcmp(method, 'linear')
     addpath(LIBSVM_PATH)
     methodID = 1;
 end
-if strcmp(method, 'treebagger'); methodID = 0; end
+if strcmp(method, 'randforest'); methodID = 0; end
 
 
 assert(exist(FramePath, 'file') == 2)
@@ -61,35 +61,35 @@ for SlideSize = SlideSizeRange
     %as the SlideSize doesn't change in the inner for loop the weights and indices
     %are the same and should only be computed on time, what we are doing here...
     [resizeWeights, resizeIndices] = fast_imresize_contributions(SlideSize, BBWidth, 4, true);
-    
+
     %Amount of pixels the window is moved in every step
     SliderStep = floor(SlideSize/2);
     %SliderStep = 2;
-    
+
     assert(SliderStep <= SlideSize)
-    
+
     %Get left and top start of the sliding window grid
     slide_top = floor(mod(im_y, SlideSize) / 2);
     slide_left = floor(mod(im_x, SlideSize) / 2);
-    
+
     %To avoid that we start at pixel 0, which doesn't exist
     slide_top = max(1, slide_top);
     slide_left = max(1, slide_left);
-    
+
     %Get the number of windows we will predict for:
     NumberOfSlides = size(slide_top : SlideSize : im_y-slide_top-1, 2)...
                    * size(slide_left : SlideSize : im_x-slide_left-1, 2);
-    
+
     %--------------------------------------------------------
     %First: Get prediction for the labels of a sliding window
     %--------------------------------------------------------
-    
+
     instanceVector = zeros(NumberOfSlides, 256 + CountOfHOG^2*(numOrient*3+4), 'double');
     labelVector = zeros(NumberOfSlides, 1, 'double');
-    
+
     %The index of the instance in the instanceVector
     it = 1;
-    
+
     %Slide over image
     for y = slide_top : SliderStep : im_y-SlideSize
         for x = slide_left : SliderStep : im_x-SlideSize
@@ -98,44 +98,44 @@ for SlideSize = SlideSizeRange
             Y = y : y+SlideSize-1;
             %The x-values of the sliding window
             X = x : x+SlideSize-1;
-    
+
             %The image data for this window
             impart = im(Y, X);
-    
+
             %Resize window to right size of needed
             if BBWidth ~= SlideSize
                 impart = imresizemex(impart, resizeWeights, resizeIndices, 1);
                 impart = imresizemex(impart, resizeWeights, resizeIndices, 2);
             end
-    
+
             %Compute the HOG features
             hog = vl_hog(impart, HOGCellSize);
-    
+
             %If flipping is demanded permute the HOG features
             if permut ~= 0
                  perm = vl_hog('permutation');
                  hog = hog(:, end:-1:1, perm);
             end
-    
+
             %Make floats from HOG features a vector and normalize it
             hog = reshape(hog, 1, []);
             hog = hog/norm(hog);
-    
+
             %Get color histogram and normalize it
             hist = imhist(impart)';
             hist = hist/norm(hist);
-    
+
             %Write the features as a instance
             instanceVector(it, :) = [hog hist];
             %Use a random label, as we don't know the real one
             labelVector(it) = rand(1) > 0.5;
-    
+
             %increment the index for the next instance
             it = it + 1;
-    
+
         end
     end
-    
+
 
     switch methodID
         %First case: We use the liblinear to predict
@@ -144,24 +144,24 @@ for SlideSize = SlideSizeRange
             instanceVector = sparse(instanceVector);
             %Predict the labels for all the instances
             [labelVector] = predict(labelVector, instanceVector, Model);
-    
-        %Second case: We use the TreeBagger to predict
+
+        %Second case: We use the randforest to predict
         case 0
             %Predict the labels for all the instances
             [labelVector] = Model.predict(instanceVector);
     end
     clear instanceVector
-    
+
     %------------------------------------------------
     %Second: Add the predicted labels to the HeatMaps
     %------------------------------------------------
     %reset the instance index
     it = 1;
-    
+
     %Slide over image
     for y = slide_top : SliderStep : im_y-SlideSize
         for x = slide_left : SliderStep : im_x-SlideSize
-    
+
             %The y-values of the sliding window
             Y = y : y+SlideSize-1;
             %Y = (2*y+SlideSize-1)/2;
@@ -171,23 +171,23 @@ for SlideSize = SlideSizeRange
             %X = (2*x+SlideSize-1)/2;
             X = round(max(0, X));
 
-            %Treebagger returns the label as a string so in this case we convert it to a number
+            %randforest returns the label as a string so in this case we convert it to a number
             switch methodID
                 case 1
                     label = labelVector(it);
                 case 0
                     label = str2double(labelVector(it));
             end
-    
+
             %If we want the positiv HeatMap modusID is 1 and label has to be 1
             %if we want the negativ one modusID is 0 and label has to be 0
             if modusID == label
                 HeatMap(Y, X) = HeatMap(Y, X) + 1;
             end
-    
+
             %increment the index for the next instance
             it = it + 1;
-    
+
         end
     end
 end

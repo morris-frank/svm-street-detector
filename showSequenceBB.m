@@ -9,11 +9,12 @@ global FOLDERNAMEBASE DATAFOLDER
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
+    SeqFolderName = [FOLDERNAMEBASE, sprintf('%04d', FolderNumber), '/'];
+    ComputationDir = [DATAFOLDER, 'RESULTS/', SeqFolderName];
 
-    frames = dir([FolderPath, '/*jpg']);
+    BBFileName = [DATAFOLDER, 'DATA/', SeqFolderName, '.bb'];
 
-    BBFile = fopen([FolderPath, '.bb']);
+    BBFile = fopen(BBFileName);
     BBData = textscan(BBFile, 'seq%u16\\I%5u16.jpg\t%u16 %u16 %u16 %u16\t%1u16');
     %[1:FrameID, 2:CatID, 3:left, 4:top, 5:right, 6:bottom]
     BBMat = cell2mat({BBData{2}, BBData{7}, BBData{3}, BBData{4}, BBData{5}, BBData{6}});
@@ -21,15 +22,16 @@ for FolderNumber = FolderNumbers
     fclose(BBFile);
     clear BBData BBFile;
 
-    %Iterate through frames with two iterators
-    for f = 1:length(frames)
-        frame = frames(f);
+    %Iterate over frames in video
+    parfor f = 1:length(dir([DATAFOLDER, 'DATA/', SeqFolderName, '/*jpg'])')
+        FrameFileName = ['I', sprintf('%05d', f)];
         BBoxes = BBMat(BBMat(:, 1) == f, :);
 
+        %The frame from the video
+        FramePath = [DATAFOLDER, 'DATA/', SeqFolderName, FrameFileName, '.jpg'];
+
         %Read image, make them gray singles
-        im = im2single(rgb2gray(rjpg8c( ...
-                                        [FolderPath, '/', frame.('name')] ...
-                      )));
+        im = im2single(rgb2gray(rjpg8c(FramePath)));
 
         imshow(im), hold on
 

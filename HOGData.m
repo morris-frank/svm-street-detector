@@ -10,33 +10,33 @@ assert(wHOGCell > 0)
 
 HeaderConfig
 global FOLDERNAMEBASE DATAFOLDER
-FolderNameAdd = '_hog/';
 
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
+    SeqFolderName = [FOLDERNAMEBASE, sprintf('%04d', FolderNumber), '/'];
+    ComputationDir = [DATAFOLDER, 'RESULTS/', SeqFolderName];
 
-    mkdir([FolderPath, FolderNameAdd]);
+    mkdir([ComputationDir, 'hog']);
+    mkdir([ComputationDir, 'hog/data']);
+    mkdir([ComputationDir, 'hog/render']);
 
-    %Iterate through frames with two iterators
-    parfor frame = dir([FolderPath, '/*jpg'])'
-        frameName = strtok(frame.('name'), '.');
-        if exist([FolderPath, FolderNameAdd, frameName, '_render.png'], 'file') && exist([FolderPath, FolderNameAdd, frameName, '_data.mat'], 'file')
-           continue
-        end
-        disp([FolderPath, ': ', frameName]);
+    %Iterate over frames in video
+    parfor f = 1:length(dir([DATAFOLDER, 'DATA/', SeqFolderName, '/*jpg'])')
+        FrameFileName = ['I', sprintf('%05d', f)];
 
-        %Read image, make them gray singles
-        im = im2single(rgb2gray( imread( ...
-                                        [FolderPath, '/', frame.('name')] ...
-                      )));
+        %The frame from the video
+        FramePath = [DATAFOLDER, 'DATA/', SeqFolderName, FrameFileName, '.jpg'];
 
-        hog = vl_hog(im, wHOGCell);
+        %Read image, make them gray doubles
+        %and put into gpuarray
+        Im = im2single(rgb2gray(imread(FramePath)));
+
+        hog = vl_hog(Im, wHOGCell);
         imhog = vl_hog('render', hog);
 
         %Write results to image and mat File
-        imwrite(imhog, [FolderPath, FolderNameAdd, frameName, '_render.png'], 'png');
-        parsave([FolderPath, FolderNameAdd, frameName, '_data.mat'], hog);
+        imwrite(imhog, [ComputationDir, 'hog/render/', FrameFileName, '.png'], 'png');
+        parsave([ComputationDir, 'hog/data/', FrameFileName, '.mat'], hog);
     end;
 end;
 

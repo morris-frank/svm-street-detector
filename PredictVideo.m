@@ -1,56 +1,42 @@
 % See the file 'LICENSE' for the full license governing this code.
-function PredictVideo(FolderNumbers, Model, method, StartFrames)
-
-if nargin < 4
-    StartFrames = 1;
-end
+function PredictVideo(FolderNumbers, Model, modelname, method)
 
 assert(min(FolderNumbers) >= 0)
-
-if size(StartFrames, 2) ~= 1 && size(StartFrames, 2) ~= numel(FolderNumbers)
-	error('You must provide one startframe for all folders or one startframe per folder');
-end
-
-if size(StartFrames, 2) == 1
-	StartFrames = ones(1, numel(FolderNumbers)) * StartFrames;
-end
 
 HeaderConfig
 global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER
 
-if strcmp(method, 'treebagger')
-    FolderNameAdd = '_prediction_treebagger';
-    FolderNameAddPre = '_prediction_treebagger_unmorphed';
-else
-    FolderNameAdd = '_prediction_liblinear';
-    FolderNameAddPre = '_prediction_liblinear_unmorphed';
-end
-  
 addpath(LIBSVM_PATH)
 
-%Iterate over video folders
 for FolderNumber = FolderNumbers
-    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
+    SeqFolderName = [FOLDERNAMEBASE, sprintf('%04d', FolderNumber), '/'];
+    PredictionDir = [DATAFOLDER, 'RESULTS/PREDICTIONS/', modelname, '/', SeqFolderName];
 
-    mkdir([FolderPath FolderNameAdd]);
-    mkdir([FolderPath FolderNameAddPre]);
+    mkdir([PredictionDir, 'morphed_prediction']);
+    mkdir([PredictionDir, 'morphed_prediction/data']);
+    mkdir([PredictionDir, 'morphed_prediction/render']);
 
-    frames = dir([FolderPath, '/*jpg']);
-    StartFrame = StartFrames(find(FolderNumbers==FolderNumber));
-    %parpool(2)
+    mkdir([PredictionDir, 'prediction']);
+    mkdir([PredictionDir, 'prediction/data']);
+    mkdir([PredictionDir, 'prediction/render']);
+
     %Iterate over frames in video
-    for f = StartFrame:length(frames)
-    	FramePath = [FolderPath, '/I', sprintf('%05d', f), '.jpg'];
+    for f = 1:length(dir([DATAFOLDER, 'DATA/', SeqFolderName, '/*jpg'])')
+        FrameFileName = ['I', sprintf('%05d', f)];
+
+        %The frame from the video
+        FramePath = [DATAFOLDER, 'DATA/', SeqFolderName, FrameFileName, '.jpg'];
+
         [HeatMap, im] = PredictFrame(FramePath, Model, method);
-        
+
         %Save the Heat Map
-        parsave([FolderPath FolderNameAddPre '/I' sprintf('%05d', f) '.mat'],'HeatMap');
-        
+        parsave([PredictionDir, 'prediction/data/', FrameFileName, '.mat'], HeatMap);
+
         %Save the frame without Morphology applied
-        saveOverlay(HeatMap, im, [FolderPath FolderNameAddPre '/I' sprintf('%05d', f) '.png'])
-        
+        saveOverlay(HeatMap, im, [PredictionDir, 'prediction/render/', FrameFileName, '.png'])
+
         %Apply the Morphology and save the frame
-        saveOverlay(MP2(HeatMap, im), im, [FolderPath FolderNameAdd '/I' sprintf('%05d', f) '.png'])
+        saveOverlay(MP2(HeatMap, im), im, [PredictionDir, 'morphed_prediction/render/', FrameFileName, '.png'])
     end
 end
 

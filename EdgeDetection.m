@@ -6,27 +6,25 @@ assert(min(FolderNumbers) >= 0)
 HeaderConfig
 global FOLDERNAMEBASE DATAFOLDER
 
-FolderNameAdd = '_edge/';
-
 %Iterate through video folders
 for FolderNumber = FolderNumbers
-    FolderPath = [DATAFOLDER, FOLDERNAMEBASE, sprintf('%04d', FolderNumber)];
+    SeqFolderName = [FOLDERNAMEBASE, sprintf('%04d', FolderNumber), '/'];
+    ComputationDir = [DATAFOLDER, 'RESULTS/', SeqFolderName];
 
-    mkdir([FolderPath, FolderNameAdd]);
+    mkdir([ComputationDir, 'edge']);
+    mkdir([ComputationDir, 'edge/canny']);
+    mkdir([ComputationDir, 'edge/prewitt']);
 
-    %Iterate through frames with two iterators
-    parfor frame = dir([FolderPath, '/*jpg'])'
-        frameName = strtok(frame.('name'), '.');
-        if exist([FolderPath, FolderNameAdd, frameName, '_canny.jpg'], 'file') && exist([FolderPath, FolderNameAdd, frameName, '_prewitt.jpg'], 'file')
-           continue
-        end
-        disp([FolderPath, ': ', frameName]);
+    %Iterate over frames in video
+    parfor f = 1:length(dir([DATAFOLDER, 'DATA/', SeqFolderName, '/*jpg'])')
+        FrameFileName = ['I', sprintf('%05d', f)];
+
+        %The frame from the video
+        FramePath = [DATAFOLDER, 'DATA/', SeqFolderName, FrameFileName, '.jpg'];
 
         %Read image, make them gray doubles
         %and put into gpuarray
-        Im = im2single(rgb2gray(imread( ...
-                                    [FolderPath, '/', frame.('name')] ...
-                     )));
+        Im = im2single(rgb2gray(imread(FramePath)));
 
         %Calculate canny and prewitt pictures:
         %canny = edge(gpuIm, 'canny', 3)
@@ -35,10 +33,10 @@ for FolderNumber = FolderNumbers
         %prewitt = gather(prewitt)
 
         prewitt = edge(Im, 'prewitt', 0.05)
-        canny = edge(Im, 'canny', [0.03, 0.085])
+        canny = edge(Im, 'canny', [0.01, 0.07])
 
         %Write results to images
-        imwrite(canny, [FolderPath, FolderNameAdd, frameName, '_canny.png'], 'png');
-        imwrite(prewitt, [FolderPath, FolderNameAdd, frameName, '_prewitt.png'], 'png');
+        imwrite(canny, [ComputationDir, 'edge/canny/', FrameFileName, '.png'], 'png');
+        imwrite(prewitt, [ComputationDir, 'edge/prewitt/', FrameFileName, '.png'], 'png');
     end;
 end;
