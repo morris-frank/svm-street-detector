@@ -1,5 +1,5 @@
 % See the file 'LICENSE' for the full license governing this code.
-function MODEL = TrainFromSVMFile(trainFile, method) %#ok<*STOUT>
+function MODEL = TrainFromFile(trainFile, method) %#ok<*STOUT>
 
 HeaderConfig
 global LIBSVM_PATH LLC LLTYPE LLE TBSIZE DATAFOLDER
