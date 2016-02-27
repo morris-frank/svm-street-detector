@@ -120,7 +120,7 @@ for b = startBB:nBB
 
 end
 
-%close(bar)
+close(bar)
 
 if permut == 0
     libsvmwrite([DATAFOLDER, 'TRAIN/', bbFileName, '.train'], labelVector, sparse(instanceVector));

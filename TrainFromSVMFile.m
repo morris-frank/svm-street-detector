@@ -32,11 +32,11 @@ switch methodID
 		instanceVector = full(instanceVector);
 	    NumPreds = num2str(floor(sqrt(size(instanceVector(1,:), 2))));
 		randforestParams = ['''NumPrint'', 10'];
-		eval([modelName ' = randforest(TBSIZE, instanceVector, labelVector, ''Method'', ''classification'', ' randforestParams ');']);
+		eval([modelName ' = TreeBagger(TBSIZE, instanceVector, labelVector, ''Method'', ''classification'', ' randforestParams ');']);
 end
 
 eval(['save(''' modelName ''', ''' modelName ''')']);
-eval(['movefile(''' modelName '.mat'', ''' DATAFOLDER 'MODEL/'''])
-eval(['MODEL = ' modelName ';']);
+%eval(['movefile(''' modelName '.mat'', ''' DATAFOLDER 'MODEL/'''])
+%eval(['MODEL = ' modelName ';']);
 
 end

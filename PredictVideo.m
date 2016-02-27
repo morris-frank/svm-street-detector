@@ -9,6 +9,7 @@ global LIBSVM_PATH FOLDERNAMEBASE DATAFOLDER
 addpath(LIBSVM_PATH)
 
 for FolderNumber = FolderNumbers
+
     SeqFolderName = [FOLDERNAMEBASE, sprintf('%04d', FolderNumber), '/'];
     PredictionDir = [DATAFOLDER, 'RESULTS/PREDICTIONS/', modelname, '/', SeqFolderName];
 
@@ -20,9 +21,15 @@ for FolderNumber = FolderNumbers
     mkdir([PredictionDir, 'prediction/data']);
     mkdir([PredictionDir, 'prediction/render']);
 
+    bar = waitbar(0, ['Processing ' SeqFolderName '...']);
+
+    FrameCount = length(dir([DATAFOLDER, 'DATA/', SeqFolderName, '/*jpg'])');
+
     %Iterate over frames in video
-    for f = 1:length(dir([DATAFOLDER, 'DATA/', SeqFolderName, '/*jpg'])')
+    for f = 1:FrameCount
         FrameFileName = ['I', sprintf('%05d', f)];
+
+        waitbar(f/FrameCount)
 
         %The frame from the video
         FramePath = [DATAFOLDER, 'DATA/', SeqFolderName, FrameFileName, '.jpg'];
@@ -36,8 +43,10 @@ for FolderNumber = FolderNumbers
         saveOverlay(HeatMap, im, [PredictionDir, 'prediction/render/', FrameFileName, '.png'])
 
         %Apply the Morphology and save the frame
-        saveOverlay(MP2(HeatMap, im), im, [PredictionDir, 'morphed_prediction/render/', FrameFileName, '.png'])
+        saveOverlay(MorphHeatMap(HeatMap, im), im, [PredictionDir, 'morphed_prediction/render/', FrameFileName, '.png'])
     end
+
+    close(bar)
 end
 
 end
