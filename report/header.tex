@@ -1,0 +1,74 @@
+\documentclass[parskip=half, 11pt, a4paper, twocolumn]{scrartcl}
+
+\usepackage{fontspec}
+\usepackage[left=1.3cm, right=1.3cm, bottom=2.5cm]{geometry}
+\usepackage{amsmath, amssymb, nicefrac}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tabularx, booktabs}
+\usepackage{paralist, csquotes}
+\usepackage{footnote}
+\usepackage{subcaption}
+\usepackage[separate-uncertainty=true]{siunitx}
+\usepackage{hepnicenames}
+
+\usepackage{sectsty}
+\allsectionsfont{\large\usefont{OT1}{pag}{b}{n}}
+\subsectionfont{\normalsize}
+
+\setkomafont{caption}{\footnotesize}
+
+% Sprache setzen (polyglossia)
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+
+% Kopf- und Fußzeilen (fancyhdr)
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+
+% (hyperref)
+\usepackage[colorlinks=true, allcolors=magenta]{hyperref}
+\hypersetup{
+	pdfborder={0 0 0}
+	pdftitle={Statistical classification of drivable roadways}
+	pdfauthor={M. Frank}
+	%pdfsubject={kurze Auswertung}
+}
+
+% Graphiken leichter einbinden
+\graphicspath{{media/}}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\usepackage{titling} % Allows custom title configuration
+
+\newcommand{\HorRule}{\rule{\linewidth}{1pt}}
+
+\pretitle{\vspace{-130pt} \begin{flushleft} \HorRule \fontsize{20}{20} \usefont{OT1}{pag}{b}{n}}
+\title{Statistical classification of drivable roadways}
+\posttitle{\par\end{flushleft}}
+
+\preauthor{\begin{flushleft}\normalsize \usefont{OT1}{pag}{b}{sl}}
+\author{Maurice Frank\thanks{E-Mail: \href{mailto:Maurice.Frank@stud.uni-heidelberg.de}{Maurice.Frank@stud.uni-heidelberg.de}}, }
+
+\postauthor{\footnotesize \usefont{OT1}{pag}{m}{sl}
+Ruprecht-Karls-Universit\"at Heidelberg\\
+Supervisor: \usefont{OT1}{pag}{b}{sl}Miguel Bautista
+\end{flushleft}\HorRule} % Horizontal rule after the title
+
+\date{\normalsize\usefont{OT1}{pag}{b}{n}29 February 2016}
+
+%----------------------------------------------------------------------------------------
+
+
+% Einrückungen am Anfang von Paragraphen finde ich persönlich eher unschön.
+\setlength\parindent{0pt}
+
+% Literaturangaben
+\usepackage[backend=biber, style=ieee]{biblatex}
+\addbibresource{References.bib}
+
+\newcommand{\gridim}[1]{\includegraphics[width=0.2\textwidth,keepaspectratio]{#1}}
