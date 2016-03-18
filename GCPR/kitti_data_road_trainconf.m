@@ -1,26 +1,33 @@
-name = 'KITTI_data_road';
+name        = 'KITTI_data_road';
 
-basedir = '~/var/data/KITTI/data_road/';
+basedir     = '~/var/data/KITTI/data_road/';
 
-testbasedir = '~/var/data/KITTI/data_road/';
+testbasedir = '~/var/data/KITTI/kitti_residential/';
 
-testfilelist = {{'training/train.txt'}};
+testfilelist = {{ ...
+	'training/train.txt', ...
+    'kitti0046/test.txt', ...
+    'kitti0079/test.txt', ...
+    'kitti0035/test.txt', ...
+    'kitti0020/test.txt', ...
+    'kitti0039/test.txt' ...
+}};
 
 trainfilelist = {{'training/train.txt'}};
 
-modeldir = '../';
-traindir = '../';
+modeldir      = './';
+traindir      = './';
 
 %----------
 
 %Feature options
 hogcellsize = 17;
-hogorient = 9;
-patchsize = 3;
+hogorient   = 9;
+patchsize   = 3;
 
 %LibLinear options
 lltype = 2;
-llc = 1e2;
+llc    = 1e2;
 
 %Randforest options
 tbsize = 30;
@@ -42,5 +49,5 @@ kitti_data_road = ...
 		  );
 
 
-clear name basedir testimgdir modeldir traindir
+clear name basedir testimgdir modeldir traindir testbasedir testfilelist
 clear hogcellsize hogorient patchsize lltype llc tbsize trainfilelist

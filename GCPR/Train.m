@@ -1,11 +1,12 @@
-function Train(conf)
+function [model, modelpath] = Train(conf)
 
 assert(isstruct(conf))
 
-trainfile = [conf.name '.train']
-dir
+spwd = pwd;
 
-if exist(trainfile, 'file') == 2
+trainfile = [conf.name '.train'];
+
+if exist([conf.base conf.traindir trainfile], 'file') == 2
 	choice = menu('Training file found! Should I use it?', ...
 		'Yes', ...
 		'Recalculate', ...
@@ -27,7 +28,6 @@ if choice == 2
 	PrepareTrain(conf)
 end
 
-spwd = pwd;
 cd(conf.base)
 cd(conf.traindir)
 
@@ -56,3 +56,5 @@ cd(conf.base)
 cd(conf.modeldir)
 save(modelfile, 'model');
 cd(spwd)
+
+modelpath = [conf.base conf.modeldir modelfile];
