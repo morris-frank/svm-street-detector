@@ -1,52 +1,60 @@
 % PrepareTrain: function description
 function PrepareTrain(conf)
 
+%If only on path is given
+if ~iscellstr(conf.trainlists) and ischar(conf.trainlists)
+	conf.trainlists = cellstr(conf.trainlists);
+end
+
 assert(isstruct(conf))
+assert(iscellstr(conf.trainlists))
 
 %Dimensions of the feature vector
 fdims = 3 * 256 + conf.patchsize^2 * (3 * conf.hogorientations + 4);
 
-%Load the directories with the patches
-pospatches = dir([conf.base conf.positives '*png']);
-lpp = length(pospatches);
-negpatches = dir([conf.base conf.negatives '*png']);
-lnp = length(negpatches);
+labels = zeros(0, 1, 'double');
+instances = sparse(0,fdims);
 
-%Number of testing instances
-pdims = lpp + lnp;
+startit = 0;
 
-labels = zeros(pdims, 1, 'double');
-instances = sparse(pdims, fdims);
+%Iterate over lists of trainings images
+for trainlist = conf.trainlists
+	[status, cmdout] = system(['wc -l ' conf.base trainlist{1}]);
+	if(status~=1)
+		scanCell = textscan(cmdout,'%f %s');
+		lineCount = scanCell{1};
+	else
+		error(['Could not run wc -l on ' conf.base trainlist{1}]);
+	end
 
-%Adding positive patches to matrix
-bar = waitbar(0, [conf.name ': processing positive patches...' ]);
-for i = 1:lpp
-	waitbar(i/lnp)
-	labels(i + lnp) = 1;
-	patch = im2single(imread([conf.base conf.positives pospatches(i).name]));
-	instances(i + lnp, :) = GetFeatures(...
-		patch, ...
-		conf.patchsize, ...
-		conf.hogcellsize ...
-	);
+	labels = padarray(labels, lineCount, 'post');
+	instances = sparse(padarray(instances, [lineCount 0], 'post'));
+
+	fid = fopen([conf.base trainlist{1}], 'rt');
+
+
+	bar = waitbar(0, [trainlist{1} ': processing file...' ]);
+	for it=1:lineCount
+		waitbar(it/lineCount)
+		tl = fgetl(fid);
+		if ~ischar(tl)
+			break
+		end
+
+		comp = strsplit(tl);
+
+		labels(it + startit) = comp{2};
+		patch = im2single(imread([conf.base comp{1}]));
+		instances(it + startit, :) = GetFeatures(...
+			patch, ...
+			conf.patchsize, ...
+			conf.hogcellsize ...
+		);
+	end
+
+	startit = it;
+	close(bar);
 end
-
-close(bar);
-
-%Adding negative patches to matrix
-bar = waitbar(0, [conf.name ': processing negative patches...' ]);
-for i = 1:lnp
-	waitbar(i/lnp)
-	labels(i) = 0;
-	patch = im2single(imread([conf.base conf.negatives negpatches(i).name]));
-	instances(i, :) = GetFeatures(...
-		patch, ...
-		conf.patchsize, ...
-		conf.hogcellsize ...
-	);
-end
-
-close(bar);
 
 spwd = pwd;
 cd(conf.base)

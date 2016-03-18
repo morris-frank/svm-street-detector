@@ -61,12 +61,13 @@ for SlideSize = SlideSizeRange
             %The x-values of the sliding window
             X = x:x+SlideSize-1;
 
-            window = im(Y, X);
+            window = im(Y, X, :);
 
             %Calculate features for the current window and add a random label
             instances(it, :) = GetFeatures(window, conf.patchsize, conf.hogcellsize);
             labels(it) = rand(1) > 0.5;
 
+            %increment the index for the next instance
             it = it + 1;
         end
     end
@@ -91,6 +92,25 @@ for SlideSize = SlideSizeRange
     for y = head.y:step:sim.y-SlideSize
         for x = head.x:step:sim.x-SlideSize
 
+            %The y-values of the sliding window
+            Y = y:y+SlideSize-1;
+            %The x-values of the sliding window
+            X = x:x+SlideSize-1;
+
+            %randforest returns the label as a string so in this case we convert it to a number
+            switch method
+                case LibLinear
+                    label = labels(it);
+                case Randforest
+                    label = str2double(labels(it));
+            end
+
+            if label == 1
+                hm(Y, X) = hm(Y, X) + 1;
+            end
+
+            %increment the index for the next instance
+            it = it + 1;
         end
     end
 
