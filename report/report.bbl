@@ -1,0 +1,94 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.5 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \sortlist{none}{none}
+    \entry{uoctti}{article}{}
+      \name{author}{4}{}{%
+        {{hash=7717e83a53bb10cda27327a1c756738b}{Felzenszwalb}{F\bibinitperiod}{Pedro\bibnamedelima F}{P\bibinitperiod\bibinitdelim F\bibinitperiod}{}{}{}{}}%
+        {{hash=1c2f0ff9f16b78744eca5720375117cb}{Girshick}{G\bibinitperiod}{Ross\bibnamedelima B}{R\bibinitperiod\bibinitdelim B\bibinitperiod}{}{}{}{}}%
+        {{hash=09a4af5c985fc9a46727803f19cd8272}{McAllester}{M\bibinitperiod}{David}{D\bibinitperiod}{}{}{}{}}%
+        {{hash=aedcd3831845183e070aef16857d83ea}{Ramanan}{R\bibinitperiod}{Deva}{D\bibinitperiod}{}{}{}{}}%
+      }
+      \list{publisher}{1}{%
+        {IEEE}%
+      }
+      \strng{namehash}{08b3a130748d0e0837e314036458d57d}
+      \strng{fullhash}{3ab9559f7c278d38072fa6ecee30bd9b}
+      \field{sortinit}{0}
+      \field{sortinithash}{990108227b3316c02842d895999a0165}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Pattern Analysis and Machine Intelligence, IEEE Transactions on}
+      \field{number}{9}
+      \field{title}{Object detection with discriminatively trained part-based models}
+      \field{volume}{32}
+      \field{year}{2010}
+      \field{pages}{1627\bibrangedash 1645}
+      \range{pages}{19}
+    \endentry
+    \entry{liblinear}{article}{}
+      \name{author}{5}{}{%
+        {{hash=a80b4e0a934fe13da20d9a58cd4e280c}{Fan}{F\bibinitperiod}{Rong-En}{R\bibinithyphendelim E\bibinitperiod}{}{}{}{}}%
+        {{hash=e92742530fcafbae797b45437638bb01}{Chang}{C\bibinitperiod}{Kai-Wei}{K\bibinithyphendelim W\bibinitperiod}{}{}{}{}}%
+        {{hash=8ce122ee46af7bc8820d9d1c340793dc}{Hsieh}{H\bibinitperiod}{Cho-Jui}{C\bibinithyphendelim J\bibinitperiod}{}{}{}{}}%
+        {{hash=2ac88e343120cbe7a6c564c1b4e37680}{Wang}{W\bibinitperiod}{Xiang-Rui}{X\bibinithyphendelim R\bibinitperiod}{}{}{}{}}%
+        {{hash=bb8c32ec740b902c4f066796b083badc}{Lin}{L\bibinitperiod}{Chih-Jen}{C\bibinithyphendelim J\bibinitperiod}{}{}{}{}}%
+      }
+      \list{publisher}{1}{%
+        {JMLR. org}%
+      }
+      \strng{namehash}{cbb45b17f12dc08cb9dcfe897fdb5fe8}
+      \strng{fullhash}{11e44e2f48e118c7607d022a2d667950}
+      \field{sortinit}{0}
+      \field{sortinithash}{990108227b3316c02842d895999a0165}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{The Journal of Machine Learning Research}
+      \field{title}{LIBLINEAR: A library for large linear classification}
+      \field{volume}{9}
+      \field{year}{2008}
+      \field{pages}{1871\bibrangedash 1874}
+      \range{pages}{4}
+    \endentry
+    \entry{randforest}{article}{}
+      \name{author}{1}{}{%
+        {{hash=132b7100417675d55d5d4d8b244f7a34}{Breiman}{B\bibinitperiod}{Leo}{L\bibinitperiod}{}{}{}{}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{132b7100417675d55d5d4d8b244f7a34}
+      \strng{fullhash}{132b7100417675d55d5d4d8b244f7a34}
+      \field{sortinit}{0}
+      \field{sortinithash}{990108227b3316c02842d895999a0165}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Machine learning}
+      \field{number}{1}
+      \field{title}{Random forests}
+      \field{volume}{45}
+      \field{year}{2001}
+      \field{pages}{5\bibrangedash 32}
+      \range{pages}{28}
+    \endentry
+  \endsortlist
+\endrefsection
+\endinput
+
