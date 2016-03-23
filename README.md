@@ -1,11 +1,3 @@
-#Directory structure
+#Classification of driveable roadways
 
-[**]
-    -   testing
-        +   image
-    -   training
-        +   image
-        +   patches
-
-
-#Train configurations
+see report/report.pdf
