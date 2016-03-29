@@ -26,21 +26,26 @@ for S=MinsP+10:10:MaxsP
     Street = find(erodeHm);
 
     %Sample for all sizes random street pixels
-    AimMiddleInd = randperm(length(Street), length(Sizes));
+    try
+        AimMiddleInd = randperm(length(Street), length(Sizes));
+    catch ME
+        continue
+    end
     MiddleInd = Street(AimMiddleInd);
-    
+
+
     clear Street
-    
+
     for B = 1:length(MiddleInd)
         BBi = MiddleInd(B);
         BBs = floor(Sizes(B)/2);
 
         row = mod(BBi, HMs(1));
         col = floor(BBi/HMs(1)) + 1;
-        
+
         rows = row-BBs : row+BBs;
         cols = col-BBs : col+BBs;
-        
+
         imwrite(im(rows, cols, :), [patchfolder '/pos/' basename '_' sprintf('%06d', PatchID) '.png']);
         PatchID = PatchID + 1;
     end
@@ -65,7 +70,7 @@ for S=MinsN+5:5:MaxsN
     MiddleInd = NotStreet(AimMiddleInd);
 
     clear NotStreet
-    
+
     for B = 1:length(MiddleInd)
         BBi = MiddleInd(B);
         BBs = floor(Sizes(B)/2);
@@ -75,7 +80,7 @@ for S=MinsN+5:5:MaxsN
 
         rows = row-BBs : row+BBs;
         cols = col-BBs : col+BBs;
-        
+
         imwrite(im(rows, cols, :), [patchfolder '/neg/' basename '_' sprintf('%06d', PatchID) '.png']);
         PatchID = PatchID + 1;
     end

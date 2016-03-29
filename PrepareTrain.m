@@ -34,7 +34,7 @@ for trainlist = conf.trainlists
 
 	fid = fopen([conf.base trainlist{1}], 'rt');
 
-	revStr = ''
+	revStr = '';
 	for it=1:lineCount
 		msg = sprintf(['\n' trainlist{1} ': %3.1f'], 100 * it/lineCount);
 		fprintf([revStr msg]);

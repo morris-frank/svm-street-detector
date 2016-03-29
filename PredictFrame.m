@@ -4,7 +4,7 @@ function [hm, im] =  PredictFrame(model, conf, fpath)
 LibLinear = 1;
 Randforest = 0;
 
-SlideSizeRange = 50:10:70;
+SlideSizeRange = 50:10:90;
 
 % Model is LibLinear
 if isstruct(model)
@@ -28,7 +28,7 @@ hm = zeros(sim.y, sim.x, 'double');
 for SlideSize = SlideSizeRange
 
     %Amount of pixels the window is moved in every step
-    step = floor(SlideSize/2);
+    step = 10;
 
     %Get left and top start of the sliding window grid
     x = floor(mod(sim.y, SlideSize) / 2);
@@ -105,7 +105,7 @@ for SlideSize = SlideSizeRange
                     label = str2double(labels(it));
             end
 
-            if label == 1
+            if label == 49
                 hm(Y, X) = hm(Y, X) + 1;
             end
 
