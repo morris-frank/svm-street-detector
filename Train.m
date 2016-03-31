@@ -48,7 +48,7 @@ end
 
 if choice == 2
 	instances = full(instances);
-    options = statset('UseParallel', 'Never');
+    	options = statset('UseParallel', 'Always');
 	model = TreeBagger(conf.tbsize, instances, labels, 'Method', 'classification', 'NumPrint', 10, 'Options', options);
 	modelfile = [conf.name '_randforest.mat'];
 end
