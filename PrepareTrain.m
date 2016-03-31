@@ -16,11 +16,22 @@ labels = zeros(0, 1, 'double');
 instances = zeros(0, fdims);
 
 startit = 0;
+itt = 0;
 
 warning('off', 'images:imhistc:inputHasNaNs');
 
+spwd = pwd;
+
 %Iterate over lists of trainings images
 for trainlist = conf.trainlists
+    cd(conf.base)
+    cd(conf.traindir)
+    if exist([conf.name '_' num2str(itt) '.train'], 'file') == 2
+        disp([conf.name '_' num2str(itt) '.train already exists.'])
+        itt = itt + 1;
+        continue
+    end
+    cd(spwd)
 	[status, cmdout] = system(['wc -l ' conf.base trainlist{1}]);
 	if(status~=1)
 		scanCell = textscan(cmdout,'%f %s');
@@ -53,20 +64,40 @@ for trainlist = conf.trainlists
 			conf.patchsize, ...
 			conf.hogcellsize ...
 		);
-	end
+    end
+    
+    cd(conf.base)
+    cd(conf.traindir)
+    libsvmwrite(...
+        [conf.name '_' num2str(itt) '.train'], ...
+        sparse(labels), ...
+        sparse(instances) ...
+    );
+    cd(spwd)
+    
 	startit = it;
+    itt = itt + 1;
 end
 
-spwd = pwd;
+
 cd(conf.base)
 cd(conf.traindir)
+system(['touch ' conf.name '.train']);
+system(['echo "" > ' conf.name '.train']);
 
-libsvmwrite(...
-	[conf.name '.train'], ...
-	sparse(labels), ...
-	sparse(instances) ...
-);
+itt = 0;
+for trainlist = conf.trainlists
+    disp([conf.name '_' num2str(itt) '.train adding....'])
+    system(['cat ' conf.name '_' num2str(itt) '.train >> ' conf.name '.train']);
+    itt = itt + 1;
+end
 
+itt = 0;
+for trainlist = conf.trainlists
+    disp([conf.name '_' num2str(itt) '.train removing....'])
+    system(['rm ' conf.name '_' num2str(itt) '.train']);
+    itt = itt + 1;
+end
 cd(spwd)
 
 end

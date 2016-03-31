@@ -63,18 +63,18 @@ def grabcuthm(im, hm):
 
     bright = np.amax(hm)
 
-    ret,fgd = cv2.threshold(hm, 0.87 * bright, 1 * bright, cv2.THRESH_BINARY)
+    ret,fgd = cv2.threshold(hm, 0.7 * bright, 1 * bright, cv2.THRESH_BINARY)
     fgd[1:size[0]/2] = 0
     fgd[1:size[0], 1:size[1]/4] = 0
     fgd[1:size[0], size[1]*3/4:size[1]] = 0
 
-    ret,pr_fgd = cv2.threshold(hm, 0.8 * bright, 1 * bright, cv2.THRESH_BINARY)
+    ret,pr_fgd = cv2.threshold(hm, 0.5 * bright, 1 * bright, cv2.THRESH_BINARY)
     pr_fgd -= fgd
 
-    ret, bgd = cv2.threshold(hm, 0.05 * bright, 1 * bright, cv2.THRESH_BINARY_INV)
+    ret, bgd = cv2.threshold(hm, 0.1 * bright, 1 * bright, cv2.THRESH_BINARY_INV)
     bgd[size[0]/3:size[0]] = 0
 
-    ret,pr_bgd = cv2.threshold(hm, 0.8 * bright, 1 * bright, cv2.THRESH_BINARY_INV)
+    ret,pr_bgd = cv2.threshold(hm, 0.5 * bright, 1 * bright, cv2.THRESH_BINARY_INV)
     pr_bgd -= bgd
 
     mask = cv2.GC_BGD * bgd + cv2.GC_FGD * fgd + cv2.GC_PR_BGD * pr_bgd + cv2.GC_PR_FGD * pr_fgd
