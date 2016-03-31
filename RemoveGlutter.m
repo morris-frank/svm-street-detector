@@ -13,7 +13,7 @@ for m=1:length(MapFiles)
 	%Reduce to largest connected component
 	im = bwareafilt(im, 1);
 
-        	basename = strtok(MapFiles(m).name, '.');
-	imwrite([dpath basename '_llc.png'])
+	basename = strtok(MapFiles(m).name, '.');
+	imwrite(im, [dpath basename '_llc.png'])
 end
 end
