@@ -27,9 +27,9 @@ import computingPipeline, transform2BEV
 
 if __name__ == "__main__":
     
-    calib = '/home/morris/var/media/Elements/var/data/KITTI/data_road/training/calib/'
-    outputDir = '/home/morris/var/media/Elements/var/data/KITTI/validation_svm/predictions/'
-    outputDir_bev = '/home/morris/var/media/Elements/var/data/KITTI/validation_svm/obev/'
+    calib = '/home/morris/var/media/Elements/var/data/KITTI/data_road/testing/calib/'
+    outputDir = '/home/morris/var/media/Elements/var/data/KITTI/data_road/LibLinear_Results/testing/grabcut_ao_cut/'
+    outputDir_bev = '/home/morris/var/media/Elements/var/data/KITTI/data_road/LibLinear_Results/testing/bev/'
     
     # Convert baseline in perspective space into BEV space
     # If your algorithm provides results in perspective space,

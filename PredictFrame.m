@@ -105,7 +105,7 @@ for SlideSize = SlideSizeRange
                     label = str2double(labels(it));
             end
 
-            if label == 49
+            if label == 1
                 hm(Y, X) = hm(Y, X) + 1;
             end
 

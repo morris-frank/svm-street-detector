@@ -8,7 +8,7 @@ import os
 
 
 #CONSTANTS
-BASE = '/home/morris/var/media/Elements/var/data/KITTI/'
+BASE = '/home/morris/var/media/Elements/var/data/KITTI/data_road/'
 
 def matDirToPng(path):
     print 'matDirToPng: ' + pat
@@ -28,6 +28,9 @@ def addHeatMaps(idir, hdir):
             print filename
             heatmap = cv2.imread(hdir + i)
             image = cv2.imread(idir + i)
+            if heatmap.shape != image.shape:
+                print 'Shape not equal'
+                continue
 
             heatmap_jet = cv2.applyColorMap(heatmap, cv2.COLORMAP_WINTER)
             heatmap = heatmap/255
@@ -38,20 +41,12 @@ def addHeatMaps(idir, hdir):
             cv2.imwrite(hdir + filename + '_overlay.png', image)
 
 def main():
-    resdir = BASE + 'validation_svm/predictions/'
+    resdir = BASE + 'LibLinear_Results/training/predictions/'
+    grabdir = BASE + 'LibLinear_Results/training/grabcut_5_4_5/ao/cut/'
 
-    grabdir = BASE + 'validation_svm/grabcut/'
-    grabaodir = BASE + 'validation_svm/grabcut_ao/'
-    grabcutdir = BASE + 'validation_svm/grabcut_cut/'
-    grablccdir = BASE + 'validation_svm/grabcut_lcc/'
+    imdir = BASE + 'training/image/'
 
-    imdir = BASE + 'data_road/training/image/'
-
-    addHeatMaps(imdir, resdir)
     addHeatMaps(imdir, grabdir)
-    addHeatMaps(imdir, grabaodir)
-    addHeatMaps(imdir, grabcutdir)
-    addHeatMaps(imdir, grablccdir)
    # matDirToPng(resdir)
 
 

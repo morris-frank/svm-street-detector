@@ -17,20 +17,22 @@
 #           Jannik Fritsch <jannik.fritsch@honda-ri.de>
 #
 
-import os, sys
-import computeBaseline, evaluateRoad
+import os
+import sys
+import evaluateRoad
+
 
 #########################################################################
 # test script to evaluate training data in perspective domain
 #########################################################################
+def main(argv):
+    seq = argv[0]
+
+    print seq
+    datasetDir = '/home/morris/var/media/Elements/var/data/KITTI/data_road/training/'
+    outputDir = '/home/morris/var/media/Elements/var/data/KITTI/data_road/LibLinear_Results/' + seq + '/grabcut_' + argv[1] + '_' + argv[2] + '_' + argv[3] + '/'
+    evaluateRoad.main(outputDir, datasetDir)
+
 
 if __name__ == "__main__":
-    
-    datasetDir = '/home/morris/var/media/Elements/var/data/KITTI/data_road/training/'
-    outputDir = '/home/morris/var/media/Elements/var/data/KITTI/validation_svm/grabcut_lcc/'
-    
-    # Toy example running evaluation on perspective train data
-    # Final evaluation on server is done in BEV space and uses a 'valid_map'
-    # indicating the BEV areas that are invalid
-    # (no correspondence in perspective space)
-    evaluateRoad.main(outputDir, datasetDir)
+    main(sys.argv[1:])

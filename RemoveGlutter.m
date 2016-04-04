@@ -18,7 +18,7 @@ for m=1:length(MapFiles)
 		imwrite(im, [dpath basename '_llc.png'])
 	elseif type == 1
 		%Remove small components
-		im = bwareaopen(im, 50);
+		im = bwareaopen(im, 600);
 		imwrite(im, [dpath basename '_ao.png'])
 	elseif type == 2
 		%Remove everything in the top third
@@ -26,4 +26,5 @@ for m=1:length(MapFiles)
 		imwrite(im, [dpath basename '_cut.png'])
 	end
 end
+fprintf(['\n']);
 end

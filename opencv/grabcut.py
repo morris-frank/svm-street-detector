@@ -11,9 +11,9 @@ import scipy.io as sio
 BASE = '/home/morris/var/media/Elements/var/data/KITTI/'
 
 #Lower confidence bound for positive seeds
-FGD_BOUND = 0.7
+FGD_BOUND = 0.5
 #Upper confidence bound for negative seeds
-BGD_BOUND = 0.1
+BGD_BOUND = 0.4
 #Seperating confidence bound between probable positive and negative
 FGD_BGD_SEP = 0.5
 
@@ -119,7 +119,6 @@ def grabcutdir(imdir, matdir, outdir):
         if i.endswith(".mat"):
             filename = i[:-4]
             print filename
-				
             if os.path.exists(outdir + filename + '.png'):
 					print '...skipped'
 					continue
@@ -136,7 +135,22 @@ def grabcutdir(imdir, matdir, outdir):
             mat = normhm(mat)
             mask = grabcuthm(im, mat)
             savesegt(outdir + filename + '.png', mask)
-
+        if i.endswith(".png"):
+            filename = i[:-4]
+            print filename
+            if os.path.exists(outdir + filename + '.png'):
+					print '...skipped'
+					continue
+            mat = cv2.imread(matdir + i)
+            mat = mat[:,:,1]
+            mat = mat.astype(np.float32, copy=False)
+            if os.path.exists(imdir + filename + '.png'):
+                im = cv2.imread(imdir + filename + '.png')
+            else:
+                im = cv2.imread(imdir + filename + '.jpg')
+            mat = normhm(mat)
+            mask = grabcuthm(im, mat)
+            savesegt(outdir + filename + '.png', mask)
 
 
 def main(argv):
@@ -144,20 +158,29 @@ def main(argv):
 
     print seq
 
-    BASEP = '/home/morris/var/media/Elements/var/data/IAP/'
+    #Lower confidence bound for positive seeds
+    if int(argv[1] > 9):
+        FGD_BOUND = int(argv[1]) / 100
+    else:
+        FGD_BOUND = int(argv[1]) / 10
+    #Upper confidence bound for negative seeds
+    if int(argv[1] > 9):
+        BGD_BOUND = int(argv[2]) / 100
+    else:
+        BGD_BOUND = int(argv[2]) / 10
+    #Seperating confidence bound between probable positive and negative
+    if int(argv[1] > 9):
+        FGD_BGD_SEP = int(argv[3]) / 100
+    else:
+        FGD_BGD_SEP = int(argv[3]) / 10
 
-    print 'Random forest'
-    hmp1 = BASEP + 'RESULTS/PREDICTIONS/seq5_8_bb_randforest/' + seq + '/prediction/data/'
-    imp1 = BASEP + 'DATA/' + seq + '/'
-    outp1 = BASEP + 'RESULTS/PREDICTIONS/seq5_8_bb_randforest/' + seq + '/grabcut/'
+    BASEP = '/home/morris/var/media/Elements/var/data/KITTI/data_road/'
+
+    print 'LibLinear'
+    hmp1 = BASEP + 'LibLinear_Results/' + seq + '/predictions/'
+    imp1 = BASEP + seq + '/image/'
+    outp1 = BASEP + 'LibLinear_Results/' + seq + '/grabcut_' + argv[1] + '_' + argv[2] + '_' + argv[3] + '/'
     grabcutdir(imp1, hmp1, outp1)
-
-    #print 'LibLinear'
-    #hmp2 = BASEP + 'RESULTS/PREDICTIONS/seq1_4_bb_linear/' + seq + 'prediction/data/'
-    #imp2 = BASEP + 'data/' + seq + '/'
-    #outp2 = BASEP + 'RESULTS/PREDICTIONS/seq1_4_bb_linear/' + seq + '/grabcut/'
-    #grabcutdir(imp2, hmp2, outp2)
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
